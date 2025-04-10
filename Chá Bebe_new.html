@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chá de Bebê</title> <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      // Config Tailwind (igual)
+      tailwind.config = {
+         theme: {
+          extend: {
+            colors: {
+              'theme-primary': '#FFC0CB', 'theme-secondary': '#FFB6C1', 'theme-accent': '#FF69B4', 'theme-text': '#333333', 'pastel-bg': '#FFF9F5',
+              'blue-primary': '#ADD8E6', 'blue-secondary': '#B0E0E6', 'blue-accent': '#87CEFA', 'green-primary': '#98FB98', 'green-secondary': '#90EE90', 'green-accent': '#3CB371', 'yellow-primary': '#FFFFE0', 'yellow-secondary': '#FFFACD', 'yellow-accent': '#FFD700',
+            }
+          }
+        }
+       };
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap" rel="stylesheet">
+
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+
+    <style>
+        /* Estilos CSS (iguais à v5/v6) */
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg-color, #FFF9F5); color: var(--text-color, #333); }
+        .app-section { display: none; min-height: calc(100vh - 60px); padding-bottom: 70px; }
+        .app-section.active { display: block; animation: fadeIn 0.5s ease-in-out; }
+        .nav-button, .action-button { transition: background-color 0.3s ease, transform 0.1s ease, color 0.3s ease; }
+        .nav-button:active, .action-button:active { transform: scale(0.95); }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .gift-item.selected { border-color: var(--accent-color); box-shadow: 0 0 0 2px var(--primary-color); }
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.7); z-index: 9999; display: flex; justify-content: center; align-items: center; visibility: hidden; opacity: 0; transition: opacity 0.3s ease; }
+        .loading-overlay.visible { visibility: visible; opacity: 1; }
+        .spinner { border: 4px solid rgba(0, 0, 0, 0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--primary-color, #FFC0CB); animation: spin 1s ease infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .bg-theme-primary { background-color: var(--primary-color); }
+        .hover\:bg-theme-secondary:hover { background-color: var(--secondary-color); }
+        .text-theme-primary { color: var(--primary-color); }
+        .text-theme-accent { color: var(--accent-color); }
+        .border-theme-accent { border-color: var(--accent-color); }
+        .ring-theme-primary:focus { --tw-ring-color: var(--primary-color) }
+        .focus\:border-theme-primary:focus { border-color: var(--primary-color); }
+        .form-radio-theme { color: var(--primary-color); }
+        .focus\:ring-theme-primary:focus { ring-color: var(--primary-color); }
+        #admin-section input, #admin-section select, #admin-section textarea { border: 1px solid #ccc; padding: 8px; border-radius: 4px; margin-bottom: 10px; width: 100%; }
+        #admin-section label { margin-bottom: 4px; display: block; font-weight: 500;}
+        #admin-section h3 { font-size: 1.25rem; font-weight: bold; margin-top: 1.5rem; margin-bottom: 1rem; color: var(--accent-color); border-bottom: 1px solid var(--secondary-color); padding-bottom: 0.5rem;}
+        #admin-gift-list div { border: 1px solid #eee; padding: 10px; margin-bottom: 10px; border-radius: 5px; background-color: white; }
+        #admin-gift-list button { padding: 5px 10px; border-radius: 4px; cursor: pointer; margin-left: 5px;}
+        .delete-button { background-color: #fecaca; color: #dc2626; }
+        .delete-button:hover { background-color: #fca5a5; }
+        .save-button { background-color: #a7f3d0; color: #059669;}
+        .save-button:hover { background-color: #6ee7b7;}
+        #admin-auth-button img { margin-bottom: 1px; }
+        /* Estilo para mensagem de erro de Event ID */
+        #event-error-section { display: none; text-align: center; padding: 2rem; }
+        #event-error-section.active { display: block; }
+    </style>
+</head>
+<body class="bg-pastel-bg text-gray-800">
+
+    <div id="loading-overlay" class="loading-overlay visible">
+        <div class="spinner"></div>
+    </div>
+
+    <div id="app" class="container mx-auto max-w-lg p-4">
+
+        <section id="event-error-section" class="app-section p-6 text-center">
+            <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/alert-triangle.svg" alt="Erro" class="mx-auto h-16 w-16 text-red-500 mb-4">
+            <h2 class="text-2xl font-bold text-red-600 mb-4">Erro no Evento</h2>
+            <p id="event-error-message" class="text-lg text-gray-700">Não foi possível carregar os dados do evento. Verifique se o link está correto ou contacte o organizador.</p>
+            </section>
+
+        <section id="welcome-section" class="app-section text-center p-6">
+             <img src="https://placehold.co/150x150/FFC0CB/333333?text=Beb%C3%AA" alt="Ilustração Bebê" id="welcome-image" class="mx-auto mb-6 rounded-full shadow-lg" onerror="this.src='https://placehold.co/150x150/cccccc/ffffff?text=Imagem+Indispon%C3%ADvel'">
+            <h1 class="text-3xl font-bold text-theme-accent mb-2">Chá de Bebê da <span id="baby-name-welcome">...</span>!</h1>
+            <p class="text-lg mb-4">Você está convidado(a)!</p>
+            <p class="text-md mb-2"><strong>Data:</strong> <span id="event-date">...</span></p>
+            <p class="text-md mb-6"><strong>Horário:</strong> <span id="event-time">...</span></p>
+            <p class="text-gray-600">Estamos muito felizes em compartilhar este momento especial!</p>
+             <button data-action="show-rsvp" class="action-button mt-8 bg-theme-primary hover:bg-theme-secondary text-theme-text font-bold py-3 px-6 rounded-lg shadow-md w-full">
+                Confirmar Presença
+            </button>
+             <p id="admin-uid-info" class="text-xs text-gray-400 mt-4 hidden">Admin UID: <span id="admin-uid-display"></span></p>
+             <p id="event-id-info" class="text-xs text-gray-400 mt-1">ID do Evento: <span id="event-id-display">Carregando...</span></p> </section>
+
+        <section id="rsvp-section" class="app-section p-6">
+             <h2 class="text-2xl font-bold text-center text-theme-accent mb-6">Confirme sua Presença</h2>
+            <form id="rsvp-form">
+                 <div class="mb-4"> <label for="guest-name" class="block text-sm font-medium text-gray-700 mb-1">Seu Nome Completo:</label> <input type="text" id="guest-name" name="guest-name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-theme-primary focus:border-theme-primary" placeholder="Digite seu nome"> </div>
+                 <div class="mb-4"> <label for="guest-email" class="block text-sm font-medium text-gray-700 mb-1">Seu Email:</label> <input type="email" id="guest-email" name="guest-email" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-theme-primary focus:border-theme-primary" placeholder="seu.email@exemplo.com"> <p class="text-xs text-gray-500 mt-1">Usaremos seu email para associar seu presente.</p> </div>
+                 <div class="mb-6"> <span class="block text-sm font-medium text-gray-700 mb-2">Você poderá comparecer?</span> <div class="flex items-center justify-center space-x-4"> <label class="flex items-center space-x-2 p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100"> <input type="radio" name="attending" value="yes" required class="form-radio form-radio-theme focus:ring-theme-primary"> <span>Sim</span> </label> <label class="flex items-center space-x-2 p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100"> <input type="radio" name="attending" value="no" required class="form-radio text-gray-500 focus:ring-gray-400"> <span>Não</span> </label> </div> </div>
+                 <p id="rsvp-error" class="text-red-500 text-sm mb-4 text-center hidden"></p>
+                 <button type="submit" class="action-button w-full bg-theme-primary hover:bg-theme-secondary text-theme-text font-bold py-3 px-6 rounded-lg shadow-md"> Enviar Confirmação </button>
+            </form>
+        </section>
+
+        <section id="gift-section" class="app-section p-6">
+            <h2 class="text-2xl font-bold text-center text-theme-accent mb-6">Sugestão de Presente</h2>
+            <p class="text-center text-gray-600 mb-6">Escolha um item da lista ou clique em "Sortear Presente" para uma surpresa!</p>
+            <div id="gift-list-container" class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6 min-h-[150px]"> <p id="gift-list-loading" class="text-center text-gray-500 col-span-full">A carregar presentes...</p> </div>
+             <p id="gift-error" class="text-red-500 text-sm mb-4 text-center hidden"></p>
+             <p id="gift-selected-info" class="text-green-600 text-sm mb-4 text-center hidden"></p>
+            <div class="space-y-4"> <button id="confirm-manual-gift-button" data-action="confirm-manual-gift" class="action-button w-full bg-blue-400 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-lg shadow-md hidden"> Confirmar Presente Escolhido </button> <button data-action="draw-gift" class="action-button w-full bg-yellow-300 hover:bg-yellow-400 text-gray-800 font-bold py-3 px-6 rounded-lg shadow-md"> Sortear Presente Surpresa! </button> </div>
+        </section>
+
+        <section id="location-section" class="app-section p-6 text-center">
+             <h2 class="text-2xl font-bold text-theme-accent mb-6">Local do Evento</h2>
+             <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/map-pin.svg" alt="Ícone Localização" class="mx-auto h-12 w-12 text-theme-primary mb-4">
+             <p class="text-lg mb-4">O chá será realizado em:</p> <p id="event-address" class="text-md font-semibold mb-6">A carregar endereço...</p>
+             <a id="map-link" href="#" target="_blank" class="action-button inline-block bg-green-300 hover:bg-green-400 text-gray-800 font-bold py-3 px-6 rounded-lg shadow-md"> <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/map.svg" alt="Ícone Mapa" class="inline-block h-5 w-5 mr-2"> Ver no Google Maps </a>
+        </section>
+
+        <section id="calendar-section" class="app-section p-6 text-center">
+             <h2 class="text-2xl font-bold text-theme-accent mb-6">Adicionar ao Calendário</h2>
+             <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/calendar-plus.svg" alt="Ícone Calendário" class="mx-auto h-12 w-12 text-theme-primary mb-4">
+             <p class="text-lg mb-6">Não se esqueça! Adicione o evento ao seu calendário:</p>
+             <a id="google-calendar-link" href="#" target="_blank" class="action-button inline-block bg-blue-400 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-lg shadow-md mb-4 w-full sm:w-auto"> <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/calendar.svg" alt="Ícone Google" class="inline-block h-5 w-5 mr-2"> Adicionar ao Google Calendar </a>
+             <p class="text-sm text-gray-500 mt-4">(Para outros calendários, use a opção Google Calendar ou adicione manualmente)</p>
+        </section>
+
+        <section id="thankyou-section" class="app-section p-6 text-center">
+             <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/heart.svg" alt="Ícone Coração" class="mx-auto h-12 w-12 text-theme-primary mb-4 animate-pulse">
+             <h2 class="text-2xl font-bold text-theme-accent mb-4">Obrigado!</h2>
+             <p id="thankyou-message" class="text-lg mb-6">Sua resposta foi registada com sucesso.</p>
+             <p class="text-gray-600">Mal podemos esperar para celebrar consigo!</p>
+             <button data-action="show-welcome" class="action-button mt-8 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-6 rounded-lg shadow-md"> Voltar ao Início </button>
+        </section>
+
+        <section id="admin-section" class="app-section p-6">
+            <div class="flex justify-between items-center mb-6"> <h2 class="text-2xl font-bold text-theme-accent">Painel do Administrador</h2> </div>
+            <p id="admin-welcome-message" class="text-md mb-4 hidden">Olá, <span id="admin-user-name" class="font-semibold">Admin</span>!</p>
+            <p class="bg-yellow-100 border border-yellow-300 text-yellow-800 text-sm p-3 rounded-md mb-6"> <strong class="font-bold">Atenção:</strong> Você está editando o evento <strong id="admin-event-id" class="font-mono">...</strong>. As alterações afetarão este evento específico. </p>
+
+            <h3>Detalhes do Evento</h3>
+            <form id="admin-event-form">
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4"> <div> <label for="admin-baby-name">Nome do Bebê:</label> <input type="text" id="admin-baby-name" required> </div> <div> <label for="admin-event-date">Data do Evento:</label> <input type="date" id="admin-event-date" required> </div> <div> <label for="admin-event-time">Hora do Evento:</label> <input type="time" id="admin-event-time" required> </div> <div> <label for="admin-duration">Duração (horas):</label> <input type="number" id="admin-duration" min="1" value="3" required> </div> </div>
+                 <div class="mt-4"> <label for="admin-event-address">Endereço Completo:</label> <textarea id="admin-event-address" rows="3" required></textarea> </div>
+                 <div class="mt-4"> <label>Tema de Cor:</label> <div class="flex flex-wrap gap-4"> <label class="flex items-center"><input type="radio" name="theme" value="pink" class="mr-1"> Rosa</label> <label class="flex items-center"><input type="radio" name="theme" value="blue" class="mr-1"> Azul</label> <label class="flex items-center"><input type="radio" name="theme" value="green" class="mr-1"> Verde</label> <label class="flex items-center"><input type="radio" name="theme" value="yellow" class="mr-1"> Amarelo</label> </div> </div>
+                 <div class="mt-4"> <label for="admin-uids">Admin UIDs (separados por vírgula):</label> <input type="text" id="admin-uids" placeholder="UID1,UID2,..."> </div>
+                 <button type="submit" class="action-button save-button mt-6 w-full py-3">Salvar Detalhes do Evento</button>
+            </form>
+
+             <h3 class="mt-8">Gerenciar Lista de Presentes</h3>
+             <div id="admin-gift-list" class="mb-6"> <p id="admin-gift-list-loading">A carregar lista de presentes...</p> </div>
+
+             <h3>Adicionar Novo Presente</h3>
+             <form id="add-gift-form">
+                  <label for="new-gift-name">Nome do Presente:</label> <input type="text" id="new-gift-name" required>
+                  <label for="new-gift-desc">Descrição (opcional):</label> <input type="text" id="new-gift-desc">
+                  <label for="new-gift-qty">Quantidade Disponível:</label> <input type="number" id="new-gift-qty" min="1" required>
+                  <label for="new-gift-img">URL da Imagem (opcional):</label> <input type="url" id="new-gift-img" placeholder="https://exemplo.com/imagem.jpg">
+                 <button type="submit" class="action-button save-button mt-4 w-full py-3">Adicionar Presente</button>
+             </form>
+             <p id="admin-gift-error" class="text-red-500 text-sm mt-4 text-center hidden"></p>
+             <p id="admin-gift-success" class="text-green-600 text-sm mt-4 text-center hidden"></p>
+        </section>
+    </div>
+
+    <nav class="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t border-gray-200 max-w-lg mx-auto h-[60px] flex justify-around items-center" id="main-nav">
+        <button data-action="show-welcome" class="nav-button flex flex-col items-center text-gray-600 hover:text-theme-primary p-2 rounded-md"> <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/home.svg" alt="Início" class="h-6 w-6 mb-1"> <span class="text-xs">Início</span> </button>
+        <button data-action="show-rsvp" class="nav-button flex flex-col items-center text-gray-600 hover:text-theme-primary p-2 rounded-md"> <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/check-check.svg" alt="Confirmar" class="h-6 w-6 mb-1"> <span class="text-xs">Confirmar</span> </button>
+        <button data-action="show-gift" id="nav-gift-button" class="nav-button flex flex-col items-center text-gray-600 hover:text-theme-primary p-2 rounded-md disabled:opacity-50" disabled> <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/gift.svg" alt="Presente" class="h-6 w-6 mb-1"> <span class="text-xs">Presente</span> </button>
+        <button data-action="show-location" class="nav-button flex flex-col items-center text-gray-600 hover:text-theme-primary p-2 rounded-md"> <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/map-pin.svg" alt="Local" class="h-6 w-6 mb-1"> <span class="text-xs">Local</span> </button>
+        <button data-action="show-calendar" class="nav-button flex flex-col items-center text-gray-600 hover:text-theme-primary p-2 rounded-md"> <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/calendar-days.svg" alt="Calendário" class="h-6 w-6 mb-1"> <span class="text-xs">Calendário</span> </button>
+        <button data-action="admin-auth" id="admin-auth-button" class="nav-button flex flex-col items-center text-gray-600 hover:text-theme-primary p-2 rounded-md">
+            <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/log-in.svg" alt="Login" class="h-6 w-6"> <span class="text-xs">Admin</span>
+        </button>
+    </nav>
+
+    <script>
+        // --- Configuração do Firebase (SUBSTITUA) ---
+        const firebaseConfig = {
+            apiKey: "AIzaSyB6NMSbRKIOyarr2c6oOG7CsXJzuuGQrHw", 
+			authDomain: "chababy001-32f3a.firebaseapp.com", 
+			projectId: "chababy001-32f3a",
+            storageBucket: "chababy001-32f3a.appspot.com", 
+			messagingSenderId: "366959604506", 
+			appId: "1:366959604506:web:0e46294e2c0f8da2bbb2a3"
+        };
+
+        // --- Inicializar Firebase ---
+        let db, auth, googleProvider;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            db = firebase.firestore();
+            auth = firebase.auth();
+            googleProvider = new firebase.auth.GoogleAuthProvider();
+        } catch (e) {
+            console.error("Erro ao inicializar Firebase:", e);
+            alert("Erro crítico na configuração da aplicação.");
+            View.showSection('event-error-section'); // Mostra erro de evento se Firebase falhar
+            View.hideLoading();
+        }
+
+        // --- MODEL ---
+        // Responsável pelos dados e interação com o Firestore/Auth
+        const Model = {
+            currentEventId: null, // ID do evento carregado da URL
+            appConfig: null,      // Config do evento atual
+            giftDataCache: [],    // Cache de presentes do evento atual
+            currentUser: null,
+            isAdmin: false,
+            currentRsvpData: null,
+            currentRsvpDocId: null,
+
+            // --- Configuração do Evento (Agora por Event ID) ---
+            async loadEventConfig(eventId) {
+                console.log(`Model: Carregando config para evento ${eventId}...`);
+                if (!eventId) throw new Error("ID do Evento não fornecido.");
+                this.currentEventId = eventId; // Armazena o ID atual
+                const docRef = db.collection('events').doc(eventId); // Caminho alterado
+                const docSnap = await docRef.get();
+                if (docSnap.exists) {
+                    this.appConfig = docSnap.data();
+                    if (this.appConfig.eventDate?.toDate) this.appConfig.eventDate = this.appConfig.eventDate.toDate();
+                    else this.appConfig.eventDate = new Date();
+                    if (!Array.isArray(this.appConfig.adminUids)) this.appConfig.adminUids = [];
+                    console.log("Model: Config carregada", this.appConfig);
+                    this.checkAdminStatus(); // Verifica se é admin DESTE evento
+                    return this.appConfig;
+                } else {
+                    throw new Error(`Evento com ID '${eventId}' não encontrado!`);
+                }
+            },
+
+            async saveEventConfig(updatedConfigData) {
+                console.log(`Model: Salvando config para evento ${this.currentEventId}...`, updatedConfigData);
+                if (!this.isAdmin || !this.currentEventId) throw new Error("Acesso negado ou evento não carregado.");
+                if (updatedConfigData.eventDate instanceof Date) {
+                    updatedConfigData.eventDate = firebase.firestore.Timestamp.fromDate(updatedConfigData.eventDate);
+                }
+                // Garante que adminUids é um array de strings não vazias
+                 if (updatedConfigData.adminUids && typeof updatedConfigData.adminUids === 'string') {
+                     updatedConfigData.adminUids = updatedConfigData.adminUids.split(',')
+                                                     .map(uid => uid.trim())
+                                                     .filter(uid => uid.length > 0);
+                 } else if (!Array.isArray(updatedConfigData.adminUids)) {
+                     updatedConfigData.adminUids = []; // Garante que seja array
+                 }
+
+                await db.collection('events').doc(this.currentEventId).set(updatedConfigData, { merge: true });
+                console.log("Model: Config salva.");
+                await this.loadEventConfig(this.currentEventId); // Recarrega
+            },
+
+            // --- Presentes (Agora por Event ID) ---
+            async loadGifts() {
+                console.log(`Model: Carregando presentes para evento ${this.currentEventId}...`);
+                if (!this.currentEventId) throw new Error("Evento não carregado.");
+                // Caminho alterado para subcoleção
+                const snapshot = await db.collection('events').doc(this.currentEventId).collection('gifts').orderBy('name').get();
+                this.giftDataCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                console.log("Model: Presentes carregados", this.giftDataCache);
+                return this.giftDataCache;
+            },
+
+            async addGift(newGiftData) {
+                 console.log(`Model: Adicionando presente para evento ${this.currentEventId}...`, newGiftData);
+                 if (!this.isAdmin || !this.currentEventId) throw new Error("Acesso negado ou evento não carregado.");
+                 newGiftData.reserved = 0;
+                 // Caminho alterado para subcoleção
+                 const docRef = await db.collection('events').doc(this.currentEventId).collection('gifts').add(newGiftData);
+                 console.log("Model: Presente adicionado", docRef.id);
+                 await this.loadGifts();
+                 return docRef.id;
+            },
+
+            async deleteGift(giftId) {
+                console.log(`Model: Deletando presente ${giftId} do evento ${this.currentEventId}...`);
+                if (!this.isAdmin || !this.currentEventId) throw new Error("Acesso negado ou evento não carregado.");
+                const giftInCache = this.giftDataCache.find(g => g.id === giftId);
+                if (giftInCache && (giftInCache.reserved || 0) > 0) throw new Error("Não pode excluir presentes já reservados.");
+                 // Caminho alterado para subcoleção
+                await db.collection('events').doc(this.currentEventId).collection('gifts').doc(giftId).delete();
+                console.log("Model: Presente deletado.");
+                await this.loadGifts();
+            },
+
+            // --- RSVP (Agora por Event ID) ---
+            async findRsvpByEmail(email) {
+                console.log(`Model: Buscando RSVP por email ${email} no evento ${this.currentEventId}...`);
+                 if (!this.currentEventId) throw new Error("Evento não carregado.");
+                 // Caminho alterado para subcoleção e query
+                const snapshot = await db.collection('events').doc(this.currentEventId).collection('rsvps').where('email', '==', email).limit(1).get();
+                if (!snapshot.empty) {
+                    const doc = snapshot.docs[0]; this.currentRsvpData = { id: doc.id, ...doc.data() }; this.currentRsvpDocId = doc.id;
+                    console.log("Model: RSVP encontrado", this.currentRsvpData); return this.currentRsvpData;
+                }
+                console.log("Model: Nenhum RSVP encontrado."); this.currentRsvpData = null; this.currentRsvpDocId = null; return null;
+            },
+
+            async saveRsvp(rsvpData) {
+                console.log(`Model: Salvando RSVP para evento ${this.currentEventId}...`, rsvpData);
+                 if (!this.currentEventId) throw new Error("Evento não carregado.");
+                rsvpData.timestamp = firebase.firestore.FieldValue.serverTimestamp();
+                const rsvpCollectionRef = db.collection('events').doc(this.currentEventId).collection('rsvps'); // Ref da subcoleção
+                if (this.currentRsvpDocId) {
+                    await rsvpCollectionRef.doc(this.currentRsvpDocId).update(rsvpData);
+                    console.log("Model: RSVP atualizado", this.currentRsvpDocId);
+                } else {
+                    const docRef = await rsvpCollectionRef.add(rsvpData);
+                    this.currentRsvpDocId = docRef.id;
+                    console.log("Model: RSVP criado", this.currentRsvpDocId);
+                }
+                this.currentRsvpData = { ...rsvpData, id: this.currentRsvpDocId };
+                return true;
+            },
+
+            async reserveGiftTransaction(giftId, rsvpDocId, isDrawn) {
+                 console.log(`Model: Iniciando transação de reserva para evento ${this.currentEventId}...`, giftId, rsvpDocId);
+                 if (!this.currentEventId) throw new Error("Evento não carregado.");
+                 // Caminhos alterados para subcoleções
+                 const giftRef = db.collection('events').doc(this.currentEventId).collection('gifts').doc(giftId);
+                 const rsvpRef = db.collection('events').doc(this.currentEventId).collection('rsvps').doc(rsvpDocId);
+                 let giftName = '';
+
+                 await db.runTransaction(async (transaction) => {
+                    const giftDoc = await transaction.get(giftRef);
+                    if (!giftDoc.exists) throw new Error(`Presente ${giftId} não encontrado neste evento!`);
+                    const gift = giftDoc.data(); giftName = gift.name; const currentReserved = gift.reserved || 0;
+                    if (currentReserved >= gift.quantity) throw new Error(`"${giftName}" esgotado.`);
+                    transaction.update(giftRef, { reserved: currentReserved + 1 });
+                    transaction.update(rsvpRef, { giftId: giftId, giftName: giftName, drawn: isDrawn });
+                 });
+
+                 console.log("Model: Transação concluída.");
+                 const cachedGift = this.giftDataCache.find(g => g.id === giftId);
+                 if (cachedGift) cachedGift.reserved = (cachedGift.reserved || 0) + 1;
+                 return giftName;
+            },
+
+             // --- Autenticação (igual) ---
+             async signInWithGoogle() { /* ... igual ... */ return await auth.signInWithPopup(googleProvider); },
+             async signOut() { /* ... igual ... */ await auth.signOut(); },
+
+             // --- Estado Interno (Atualizado para verificar admin do evento atual) ---
+             setCurrentUser(user) {
+                 this.currentUser = user;
+                 this.checkAdminStatus(); // Verifica admin para o evento carregado
+             },
+             checkAdminStatus() {
+                 // Só pode ser admin se estiver logado E a config do evento atual foi carregada E o UID está na lista do evento
+                 if (this.currentUser && this.appConfig && this.appConfig.adminUids && this.appConfig.adminUids.includes(this.currentUser.uid)) {
+                     this.isAdmin = true;
+                 } else {
+                     this.isAdmin = false;
+                 }
+                 console.log(`Model: Status Admin para evento ${this.currentEventId}: ${this.isAdmin}`);
+             }
+        };
+
+        // --- VIEW ---
+        // Responsável por interagir com o DOM (igual à v6, mas adiciona event error section)
+        const View = {
+            elements: {
+                loadingOverlay: document.getElementById('loading-overlay'),
+                sections: document.querySelectorAll('.app-section'),
+                eventErrorSection: document.getElementById('event-error-section'), // Nova seção de erro
+                eventErrorMessage: document.getElementById('event-error-message'),
+                // Welcome
+                welcomeImage: document.getElementById('welcome-image'),
+                babyNameWelcome: document.getElementById('baby-name-welcome'),
+                eventDate: document.getElementById('event-date'),
+                eventTime: document.getElementById('event-time'),
+                adminUidInfo: document.getElementById('admin-uid-info'),
+                adminUidDisplay: document.getElementById('admin-uid-display'),
+                eventIdInfo: document.getElementById('event-id-info'), // Para mostrar ID do evento
+                eventIdDisplay: document.getElementById('event-id-display'),
+                // RSVP
+                rsvpForm: document.getElementById('rsvp-form'),
+                guestNameInput: document.getElementById('guest-name'),
+                guestEmailInput: document.getElementById('guest-email'),
+                rsvpError: document.getElementById('rsvp-error'),
+                // Gifts (Guest)
+                giftListContainer: document.getElementById('gift-list-container'),
+                giftListLoading: document.getElementById('gift-list-loading'),
+                giftError: document.getElementById('gift-error'),
+                giftSelectedInfo: document.getElementById('gift-selected-info'),
+                confirmManualGiftBtn: document.getElementById('confirm-manual-gift-button'),
+                // Location
+                eventAddress: document.getElementById('event-address'),
+                mapLink: document.getElementById('map-link'),
+                // Calendar
+                googleCalendarLink: document.getElementById('google-calendar-link'),
+                // Thank You
+                thankyouMessage: document.getElementById('thankyou-message'),
+                // Admin
+                adminSection: document.getElementById('admin-section'),
+                adminWelcomeMsg: document.getElementById('admin-welcome-message'),
+                adminUserName: document.getElementById('admin-user-name'),
+                adminEventId: document.getElementById('admin-event-id'), // Para mostrar ID do evento no admin
+                adminEventForm: document.getElementById('admin-event-form'),
+                adminBabyName: document.getElementById('admin-baby-name'),
+                adminEventDate: document.getElementById('admin-event-date'),
+                adminEventTime: document.getElementById('admin-event-time'),
+                adminDuration: document.getElementById('admin-duration'),
+                adminEventAddress: document.getElementById('admin-event-address'),
+                adminUidsInput: document.getElementById('admin-uids'), // Input para UIDs
+                adminGiftListDiv: document.getElementById('admin-gift-list'),
+                adminGiftListLoading: document.getElementById('admin-gift-list-loading'),
+                addGiftForm: document.getElementById('add-gift-form'),
+                adminGiftError: document.getElementById('admin-gift-error'),
+                adminGiftSuccess: document.getElementById('admin-gift-success'),
+                // Nav
+                mainNav: document.getElementById('main-nav'),
+                navGiftButton: document.getElementById('nav-gift-button'),
+                adminAuthButton: document.getElementById('admin-auth-button')
+            },
+
+            // --- Métodos de Atualização da UI ---
+            showLoading() { this.elements.loadingOverlay?.classList.add('visible'); },
+            hideLoading() { this.elements.loadingOverlay?.classList.remove('visible'); },
+
+            showSection(sectionId) {
+                this.elements.sections.forEach(section => section.classList.remove('active'));
+                const activeSection = document.getElementById(sectionId);
+                if (activeSection) activeSection.classList.add('active');
+                else console.warn(`View: Seção com ID '${sectionId}' não encontrada.`);
+                window.scrollTo(0, 0);
+            },
+             // Mostra a seção de erro de evento
+             showEventLoadError(message) {
+                 if (this.elements.eventErrorMessage) this.elements.eventErrorMessage.textContent = message;
+                 this.showSection('event-error-section');
+                 this.hideLoading(); // Esconde loading se deu erro
+                 // Opcional: esconder a barra de navegação em caso de erro fatal
+                 // if (this.elements.mainNav) this.elements.mainNav.classList.add('hidden');
+             },
+
+            showError(element, message) { if(element) { element.textContent = message; element.classList.remove('hidden'); } else { console.error("View: Elemento de erro não encontrado:", element); } },
+            hideError(element) { if(element) { element.classList.add('hidden'); element.textContent = ''; } },
+            showSuccess(element, message) { if(element) { element.textContent = message; element.classList.remove('hidden'); setTimeout(() => this.hideError(element), 4000); } },
+
+            applyTheme(themeColor = 'pink') { /* ... igual ... */
+                 console.log("View: Aplicando tema:", themeColor); const root = document.documentElement; let primary, secondary, accent, text = '#333333'; switch (themeColor) { case 'blue': primary = '#ADD8E6'; secondary = '#B0E0E6'; accent = '#87CEFA'; text = '#00008B'; break; case 'green': primary = '#98FB98'; secondary = '#90EE90'; accent = '#3CB371'; text = '#006400'; break; case 'yellow': primary = '#FFFFE0'; secondary = '#FFFACD'; accent = '#FFD700'; text = '#8B4513'; break; case 'pink': default: primary = '#FFC0CB'; secondary = '#FFB6C1'; accent = '#FF69B4'; text = '#333333'; break; } root.style.setProperty('--primary-color', primary); root.style.setProperty('--secondary-color', secondary); root.style.setProperty('--accent-color', accent); root.style.setProperty('--text-color', text); const spinner = document.querySelector('.spinner'); if (spinner) spinner.style.borderLeftColor = primary; if (this.elements.welcomeImage && this.elements.welcomeImage.src.includes('placehold.co')) { try { const urlParts = this.elements.welcomeImage.src.split('/'); const size = urlParts[3]; const colorsText = urlParts[4].split('?'); const textPart = colorsText[1] || ''; const bgColor = primary.substring(1); const textColorHex = text.substring(1); const textColor = textColorHex.length === 6 ? textColorHex : '333333'; this.elements.welcomeImage.src = `https://placehold.co/${size}/${bgColor}/${textColor}?${textPart}`; } catch (e) { console.warn("View: Não foi possível atualizar cor da imagem placeholder."); } }
+             },
+
+            displayWelcomeInfo(config, eventId) { /* ... igual, mas mostra eventId ... */
+                 if (!config) return; document.title = `Chá de Bebê da ${config.babyName || '[Nome]'}`; this.elements.babyNameWelcome.textContent = config.babyName || '[Nome]'; if (config.eventDate instanceof Date) { this.elements.eventDate.textContent = config.eventDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }); this.elements.eventTime.textContent = config.eventDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); } else { this.elements.eventDate.textContent = "Data Indefinida"; this.elements.eventTime.textContent = ""; } if(this.elements.eventIdDisplay) this.elements.eventIdDisplay.textContent = eventId || 'N/A';
+             },
+            displayEventDetails(config) { /* ... igual ... */
+                 if (!config) return; const address = config.eventAddress || "Endereço não definido"; this.elements.eventAddress.textContent = address; const mapQuery = encodeURIComponent(address); this.elements.mapLink.href = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`; if (config.eventDate instanceof Date) { const startTime = config.eventDate; const duration = config.durationHours || 3; const endTime = new Date(startTime.getTime() + duration * 60 * 60 * 1000); const formatGoogleDate = (d) => d.toISOString().replace(/-|:|\.\d{3}/g, ''); const googleStartDate = formatGoogleDate(startTime); const googleEndDate = formatGoogleDate(endTime); const calendarText = encodeURIComponent(`Chá de Bebê da ${config.babyName}`); const calendarDetails = encodeURIComponent(`Venha celebrar conosco! Local: ${address}`); const calendarLocation = encodeURIComponent(address); const googleLink = `https://www.google.com/calendar/render?action=TEMPLATE&text=${calendarText}&dates=${googleStartDate}/${googleEndDate}&details=${calendarDetails}&location=${calendarLocation}`; this.elements.googleCalendarLink.href = googleLink; this.elements.googleCalendarLink.onclick = null; } else { this.elements.googleCalendarLink.href = '#'; this.elements.googleCalendarLink.onclick = (e) => { e.preventDefault(); alert("Data do evento não definida."); }; }
+             },
+            updateAdminAuthButton(isUserAdmin, user) { /* ... igual ... */
+                 const icon = this.elements.adminAuthButton.querySelector('img'); const text = this.elements.adminAuthButton.querySelector('span'); if (isUserAdmin) { icon.src = 'https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/log-out.svg'; icon.alt = 'Sair Admin'; text.textContent = 'Sair'; this.elements.adminAuthButton.classList.remove('text-gray-600', 'hover:text-theme-primary'); this.elements.adminAuthButton.classList.add('text-red-500', 'hover:text-red-700'); this.elements.adminUidDisplay.textContent = user?.uid || 'N/A'; this.elements.adminUidInfo.classList.remove('hidden'); this.elements.adminUserName.textContent = user?.displayName || user?.email || 'Admin'; this.elements.adminWelcomeMsg.classList.remove('hidden'); } else { icon.src = 'https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/log-in.svg'; icon.alt = 'Login Admin'; text.textContent = 'Admin'; this.elements.adminAuthButton.classList.add('text-gray-600', 'hover:text-theme-primary'); this.elements.adminAuthButton.classList.remove('text-red-500', 'hover:text-red-700'); this.elements.adminUidInfo.classList.add('hidden'); this.elements.adminWelcomeMsg.classList.add('hidden'); }
+             },
+            updateNavGiftButton(enabled) { if (this.elements.navGiftButton) this.elements.navGiftButton.disabled = !enabled; },
+            // --- UI RSVP (igual) ---
+            fillRsvpForm(rsvpData) { if (this.elements.guestNameInput) this.elements.guestNameInput.value = rsvpData.name; const radio = document.querySelector(`input[name="attending"][value="${rsvpData.attending}"]`); if (radio) radio.checked = true; },
+            clearRsvpForm() { if (this.elements.rsvpForm) this.elements.rsvpForm.reset(); },
+            displayRsvpSuccess(name) { if (this.elements.thankyouMessage) this.elements.thankyouMessage.textContent = `Obrigado, ${name}! Sua resposta foi registada.`; },
+            displayRsvpNo(name) { if (this.elements.thankyouMessage) this.elements.thankyouMessage.textContent = `Obrigado, ${name}! Sentiremos sua falta.`; },
+            // --- UI Presentes Convidado (igual) ---
+            renderGiftList(gifts, onSelectCallback) { /* ... igual ... */ this.elements.giftListContainer.innerHTML = ''; this.hideError(this.elements.giftError); this.elements.giftListLoading.classList.add('hidden'); let hasAvailableGifts = false; if (!gifts || gifts.length === 0) { this.elements.giftListContainer.innerHTML = '<p class="text-center text-gray-500 col-span-full">Nenhum presente disponível.</p>'; return; } gifts.forEach(gift => { const reserved = gift.reserved || 0; const available = gift.quantity - reserved; if (available > 0) { hasAvailableGifts = true; const itemDiv = document.createElement('div'); itemDiv.className = 'gift-item border border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:shadow-md bg-white'; itemDiv.dataset.giftId = gift.id; itemDiv.innerHTML = ` <img src="${gift.img || 'https://placehold.co/100x100/cccccc/ffffff?text=Img'}" alt="${gift.name}" class="h-16 w-16 mx-auto mb-2 rounded object-cover" onerror="this.src='https://placehold.co/100x100/cccccc/ffffff?text=Img'"> <p class="font-semibold text-sm">${gift.name}</p> <p class="text-xs text-gray-500">${gift.description || ''}</p> <p class="text-xs text-blue-500 mt-1">Disponível: ${available}</p>`; itemDiv.addEventListener('click', () => onSelectCallback(gift.id, itemDiv)); this.elements.giftListContainer.appendChild(itemDiv); } }); if (!hasAvailableGifts) { this.elements.giftListContainer.innerHTML = '<p class="text-center text-gray-500 col-span-full">Todos presentes escolhidos.</p>'; } },
+            selectGiftUI(element) { /* ... igual ... */ document.querySelectorAll('.gift-item.selected').forEach(el => el.classList.remove('selected', 'border-2', 'border-theme-accent')); element.classList.add('selected', 'border-2', 'border-theme-accent'); this.elements.confirmManualGiftBtn.classList.remove('hidden'); this.hideError(this.elements.giftError); this.hideError(this.elements.giftSelectedInfo); },
+            clearGiftSelectionUI() { /* ... igual ... */ document.querySelectorAll('.gift-item.selected').forEach(el => el.classList.remove('selected', 'border-2', 'border-theme-accent')); this.elements.confirmManualGiftBtn.classList.add('hidden'); },
+            displayGiftResult(message, isSuccess) { /* ... igual ... */ const element = isSuccess ? this.elements.giftSelectedInfo : this.elements.giftError; this.showError(element === this.elements.giftError ? this.elements.giftSelectedInfo : this.elements.giftError, ''); if (isSuccess) this.showSuccess(element, message); else this.showError(element, message); },
+            // --- UI Admin (Atualizada) ---
+            populateAdminForm(config, eventId) {
+                if (!config) return;
+                 if(this.elements.adminEventId) this.elements.adminEventId.textContent = eventId || 'N/A'; // Mostra ID do evento
+                try {
+                    this.elements.adminBabyName.value = config.babyName || '';
+                    if (config.eventDate instanceof Date) { const dateStr = config.eventDate.getFullYear() + '-' + ('0' + (config.eventDate.getMonth() + 1)).slice(-2) + '-' + ('0' + config.eventDate.getDate()).slice(-2); const timeStr = ('0' + config.eventDate.getHours()).slice(-2) + ':' + ('0' + config.eventDate.getMinutes()).slice(-2); this.elements.adminEventDate.value = dateStr; this.elements.adminEventTime.value = timeStr; } else { this.elements.adminEventDate.value = ''; this.elements.adminEventTime.value = ''; }
+                    this.elements.adminEventAddress.value = config.eventAddress || ''; this.elements.adminDuration.value = config.durationHours || 3;
+                    const themeRadio = document.querySelector(`input[name="theme"][value="${config.themeColor || 'pink'}"]`); if (themeRadio) themeRadio.checked = true;
+                    // Preenche campo de Admin UIDs
+                     if (this.elements.adminUidsInput) this.elements.adminUidsInput.value = (config.adminUids || []).join(', ');
+                } catch (e) { console.error("View: Erro ao popular form admin:", e); this.showError(this.elements.adminGiftError, "Erro ao carregar dados do formulário."); }
+            },
+            renderAdminGiftList(gifts, deleteCallback) { /* ... igual ... */
+                 this.elements.adminGiftListDiv.innerHTML = ''; if(this.elements.adminGiftListLoading) this.elements.adminGiftListLoading.classList.add('hidden'); if (!gifts || gifts.length === 0) { this.elements.adminGiftListDiv.innerHTML = '<p class="text-gray-500">Nenhum presente cadastrado.</p>'; return; } gifts.forEach(gift => { const reserved = gift.reserved || 0; const div = document.createElement('div'); div.className = 'flex justify-between items-center flex-wrap'; div.innerHTML = ` <div class="mb-2 mr-2"> <p class="font-semibold">${gift.name} <span class="text-xs text-gray-400">(ID: ${gift.id})</span></p> <p class="text-sm text-gray-600">${gift.description || 'Sem descrição'}</p> <p class="text-sm">Qtd Total: ${gift.quantity} | Reservados: ${reserved}</p> ${gift.img ? `<a href="${gift.img}" target="_blank" class="text-xs text-blue-500 hover:underline">Ver Imagem</a>` : '<span class="text-xs text-gray-400">Sem Imagem</span>'} </div> <div class="flex-shrink-0"> <button data-action="delete-gift" data-gift-id="${gift.id}" data-reserved-count="${reserved}" class="delete-button text-xs" ${reserved > 0 ? 'disabled title="Não pode excluir presentes já reservados"' : ''}> Excluir </button> </div>`; this.elements.adminGiftListDiv.appendChild(div); });
+             },
+            clearAddGiftForm() { if(this.elements.addGiftForm) this.elements.addGiftForm.reset(); }
+        };
+
+        // --- CONTROLLER ---
+        // Orquestra a aplicação, lida com eventos e conecta Model e View
+        const Controller = {
+            selectedGiftId: null, // Estado da seleção manual
+
+            // Inicializa a aplicação
+            init() {
+                console.log("Controller: Inicializando aplicação...");
+                View.showLoading();
+                this.setupEventListeners(); // Configura listeners primeiro
+
+                // 1. Pega o eventId da URL
+                const urlParams = new URLSearchParams(window.location.search);
+                const eventId = urlParams.get('event');
+                View.elements.eventIdDisplay.textContent = eventId || 'Nenhum'; // Mostra na UI
+
+                if (!eventId) {
+                    console.error("Controller: Event ID não encontrado na URL (?event=...).");
+                    View.showEventLoadError("ID do evento não encontrado na URL. Verifique o link.");
+                    return; // Para a inicialização
+                }
+
+                // 2. Carrega a configuração do evento específico
+                Model.loadEventConfig(eventId)
+                    .then(config => {
+                        // 3. Config carregada, configura o listener de Auth
+                        this.setupAuthListener();
+                        // 4. Carrega presentes para este evento
+                        return Model.loadGifts();
+                    })
+                    .then(() => {
+                        console.log("Controller: Configuração e presentes carregados.");
+                        // A UI inicial é atualizada em setupUIWithConfig e onAuthStateChanged
+                        // Mostra a seção de boas-vindas após carregar
+                        View.showSection('welcome-section');
+                    })
+                    .catch(error => {
+                        console.error("Controller: Erro na inicialização:", error);
+                        View.showEventLoadError(`Erro ao carregar dados do evento: ${error.message}`);
+                    })
+                    .finally(() => {
+                        // Esconde loading GERAL apenas após tentar carregar tudo
+                        // (loadGifts pode ter seu próprio loading interno)
+                        View.hideLoading();
+                    });
+            },
+
+            // Configura listeners de eventos da UI
+            setupEventListeners() {
+                console.log("Controller: Configurando listeners...");
+                // Listener geral na navegação e body para data-action
+                View.elements.mainNav.addEventListener('click', (e) => this.handleActionClick(e));
+                document.body.addEventListener('click', (e) => this.handleActionClick(e)); // Para botões fora da nav
+                // Formulários
+                View.elements.rsvpForm?.addEventListener('submit', (e) => this.handleRsvpSubmit(e));
+                View.elements.guestEmailInput?.addEventListener('blur', (e) => this.handleRsvpEmailBlur(e));
+                View.elements.adminEventForm?.addEventListener('submit', (e) => this.handleAdminSaveConfig(e));
+                View.elements.addGiftForm?.addEventListener('submit', (e) => this.handleAdminAddGift(e));
+                // Lista de presentes admin (delegação)
+                View.elements.adminGiftListDiv?.addEventListener('click', (e) => {
+                    const button = e.target.closest('button[data-action="delete-gift"]');
+                    if (button) {
+                        const giftId = button.dataset.giftId;
+                        const reservedCount = parseInt(button.dataset.reservedCount, 10);
+                        this.handleAdminDeleteGift(giftId, reservedCount);
+                    }
+                });
+                 // Lista de presentes convidado (delegação - mais robusto que adicionar listener a cada item)
+                 View.elements.giftListContainer?.addEventListener('click', (e) => {
+                     const giftItem = e.target.closest('.gift-item');
+                     if (giftItem && giftItem.dataset.giftId) {
+                         this.handleGiftSelect(giftItem.dataset.giftId, giftItem);
+                     }
+                 });
+            },
+
+             // Handler centralizado para cliques com data-action
+             handleActionClick(event) {
+                 const button = event.target.closest('[data-action]');
+                 if (!button) return;
+                 const action = button.dataset.action;
+                 console.log("Controller: Action triggered:", action);
+
+                 // Previne ações se a config não carregou (exceto login admin)
+                  if (!Model.appConfig && action !== 'admin-auth') {
+                      alert("Aguarde o carregamento dos dados do evento.");
+                      return;
+                  }
+
+                 switch (action) {
+                     // Navegação
+                     case 'show-welcome': View.showSection('welcome-section'); break;
+                     case 'show-rsvp': View.showSection('rsvp-section'); break;
+                     case 'show-gift': View.showSection('gift-section'); break;
+                     case 'show-location': View.showSection('location-section'); break;
+                     case 'show-calendar': View.showSection('calendar-section'); break;
+                     // Ações
+                     case 'admin-auth': this.handleAdminAuth(); break;
+                     case 'confirm-manual-gift': this.handleConfirmManualGift(); break;
+                     case 'draw-gift': this.handleDrawGift(); break;
+                     // Adicione outras ações aqui
+                 }
+             },
+
+
+            // Configura listener de autenticação
+            setupAuthListener() {
+                auth.onAuthStateChanged(async (user) => {
+                    console.log("Controller: Auth state changed", user?.uid);
+                    Model.setCurrentUser(user); // Atualiza usuário no Model (que verifica admin)
+                    View.updateAdminAuthButton(Model.isAdmin, Model.currentUser); // Atualiza botão
+
+                    // Reavalia botão de presente
+                    View.updateNavGiftButton(Model.appConfig && (Model.isAdmin || Model.currentRsvpData?.attending === 'yes'));
+
+                    // Redireciona se não for admin e estiver na seção admin
+                    if (!Model.isAdmin && View.elements.adminSection.classList.contains('active')) {
+                        View.showSection('welcome-section');
+                    }
+                    // Popula form admin se acabou de logar como admin e está na seção
+                    if (Model.isAdmin && View.elements.adminSection.classList.contains('active')) {
+                         View.populateAdminForm(Model.appConfig, Model.currentEventId);
+                         View.renderAdminGiftList(Model.giftDataCache, this.handleAdminDeleteGift.bind(this));
+                     }
+                });
+            },
+
+            // --- Handlers de Eventos (Adaptados para usar Model e View) ---
+            async handleRsvpSubmit(event) {
+                event.preventDefault(); View.hideError(View.elements.rsvpError);
+                if (!Model.appConfig) { /* ... erro ... */ return; }
+                const name = View.elements.guestNameInput.value.trim(); const email = View.elements.guestEmailInput.value.trim(); const attendingRadio = document.querySelector('input[name="attending"]:checked');
+                if (!name || !email || !attendingRadio || !/^\S+@\S+\.\S+$/.test(email)) { View.showError(View.elements.rsvpError, "Preencha corretamente."); return; }
+                const attending = attendingRadio.value;
+                View.showLoading();
+                try {
+                    await Model.findRsvpByEmail(email); // Atualiza Model.currentRsvpDocId
+                    const rsvp = { name, email, attending };
+                    if (attending === 'no' && Model.currentRsvpData?.giftId) { rsvp.giftId = null; rsvp.giftName = null; rsvp.drawn = null; }
+                    await Model.saveRsvp(rsvp); // Salva no evento correto (Model sabe o ID)
+                    if (attending === 'yes') { View.showSection('gift-section'); }
+                    else { View.displayRsvpNo(name); View.showSection('thankyou-section'); }
+                } catch (error) { console.error("Controller: Erro RSVP submit", error); View.showError(View.elements.rsvpError, `Erro: ${error.message}`); }
+                finally { View.hideLoading(); }
+            },
+
+            async handleRsvpEmailBlur(event) {
+                const email = event.target.value.trim(); View.hideError(View.elements.rsvpError);
+                if (!Model.appConfig || !/^\S+@\S+\.\S+$/.test(email)) return;
+                View.showLoading();
+                try {
+                    const existingRsvp = await Model.findRsvpByEmail(email); // Busca no evento correto
+                    if (existingRsvp) { View.fillRsvpForm(existingRsvp); }
+                    else { View.elements.guestNameInput.value = ''; document.querySelectorAll('input[name="attending"]').forEach(r => r.checked = false); }
+                    View.updateNavGiftButton(Model.appConfig && (Model.isAdmin || existingRsvp?.attending === 'yes'));
+                } catch (error) { console.error("Controller: Erro blur email", error); }
+                finally { View.hideLoading(); }
+            },
+
+             handleGiftSelect(giftId, element) {
+                 console.log("Controller: Presente selecionado", giftId);
+                 this.selectedGiftId = giftId;
+                 View.selectGiftUI(element); // Apenas atualiza a UI
+             },
+
+             async handleConfirmManualGift() {
+                 View.hideError(View.elements.giftError);
+                 if (!Model.appConfig || !this.selectedGiftId || !Model.currentRsvpData || !Model.currentRsvpDocId || Model.currentRsvpData.attending !== 'yes') {
+                     View.showError(View.elements.giftError, "Confirme presença (Sim) e selecione um presente.");
+                     if (!Model.currentRsvpData || Model.currentRsvpData.attending !== 'yes') View.showSection('rsvp-section');
+                     return;
+                 }
+                 View.showLoading();
+                 try {
+                     const giftName = await Model.reserveGiftTransaction(this.selectedGiftId, Model.currentRsvpDocId, false);
+                     View.displayRsvpSuccess(Model.currentRsvpData.name);
+                     View.showSection('thankyou-section');
+                     this.selectedGiftId = null; View.clearGiftSelectionUI();
+                     // Opcional: Recarregar presentes para atualizar contagem visualmente, mas Model já atualizou cache
+                     // await Model.loadGifts();
+                     // View.renderGiftList(Model.giftDataCache, this.handleGiftSelect.bind(this));
+                 } catch (error) { console.error("Controller: Erro confirmar presente", error); View.displayGiftResult(error.message || "Erro ao reservar.", false); await Model.loadGifts(); View.renderGiftList(Model.giftDataCache, this.handleGiftSelect.bind(this)); } // Recarrega e re-renderiza em caso de erro
+                 finally { View.hideLoading(); }
+             },
+
+             async handleDrawGift() {
+                 View.clearGiftSelectionUI(); View.hideError(View.elements.giftError);
+                 if (!Model.appConfig || !Model.currentRsvpData || !Model.currentRsvpDocId || Model.currentRsvpData.attending !== 'yes') { View.showError(View.elements.giftError, "Confirme presença (Sim) primeiro."); View.showSection('rsvp-section'); return; }
+                 View.showLoading();
+                 try {
+                     const availableGifts = Model.giftDataCache.filter(g => (g.quantity - (g.reserved || 0)) > 0);
+                     if (availableGifts.length === 0) throw new Error("Ops! Todos os presentes já foram escolhidos.");
+                     const randomIndex = Math.floor(Math.random() * availableGifts.length); const drawnGift = availableGifts[randomIndex];
+                     this.selectedGiftId = null; // Garante que não é seleção manual
+                     const giftName = await Model.reserveGiftTransaction(drawnGift.id, Model.currentRsvpDocId, true);
+                     View.displayGiftResult(`Presente sorteado: ${giftName}! A registar...`, true);
+                     View.renderGiftList(Model.giftDataCache, this.handleGiftSelect.bind(this)); // Re-renderiza com contagem atualizada
+                     setTimeout(() => { View.displayRsvpSuccess(Model.currentRsvpData.name); View.showSection('thankyou-section'); }, 2000);
+                 } catch (error) { console.error("Controller: Erro sortear presente", error); View.displayGiftResult(error.message || "Erro ao sortear.", false); }
+                 finally { View.hideLoading(); }
+             },
+
+            // --- Handlers Admin ---
+            async handleAdminAuth() {
+                if (Model.currentUser && Model.isAdmin) { // Logout
+                    View.showLoading(); try { await Model.signOut(); } catch (e) { /*...*/ } finally { View.hideLoading(); }
+                } else { // Login
+                    View.showLoading(); try { await Model.signInWithGoogle(); } catch (e) { /*...*/ } finally { View.hideLoading(); }
+                }
+            },
+
+            async handleAdminSaveConfig(event) {
+                 event.preventDefault(); if (!Model.isAdmin) { /*...*/ return; }
+                 View.showLoading(); View.hideError(View.elements.adminGiftError); View.hideError(View.elements.adminGiftSuccess);
+                 try {
+                    const babyName = View.elements.adminBabyName.value.trim(); const eventDateStr = View.elements.adminEventDate.value; const eventTimeStr = View.elements.adminEventTime.value; const eventAddress = View.elements.adminEventAddress.value.trim(); const durationHours = parseInt(View.elements.adminDuration.value, 10); const selectedTheme = document.querySelector('input[name="theme"]:checked')?.value || 'pink';
+                    // Lê e processa Admin UIDs
+                     const adminUidsStr = View.elements.adminUidsInput.value.trim();
+                     const adminUids = adminUidsStr.split(',').map(uid => uid.trim()).filter(uid => uid.length > 0);
+
+                    if (!babyName || !eventDateStr || !eventTimeStr || !eventAddress || isNaN(durationHours) || durationHours < 1) throw new Error("Preencha campos.");
+                    const eventDateTime = new Date(`${eventDateStr}T${eventTimeStr}:00`); if (isNaN(eventDateTime.getTime())) throw new Error("Data/hora inválida.");
+                    const checkDate = eventDateTime.getDate() == eventDateStr.split('-')[2]; const checkMonth = (eventDateTime.getMonth() + 1) == eventDateStr.split('-')[1]; if (!checkDate || !checkMonth) throw new Error("Data inválida (dia/mês).");
+
+                    await Model.saveEventConfig({ babyName, eventDate: eventDateTime, eventAddress, durationHours, themeColor: selectedTheme, adminUids }); // Passa UIDs como array
+                    View.applyTheme(Model.appConfig.themeColor);
+                    View.setupUIWithConfig(Model.appConfig); // Atualiza UI geral
+                    View.showSuccess(View.elements.adminGiftSuccess, "Detalhes salvos!");
+                 } catch (error) { console.error("Controller: Erro save config", error); View.showError(View.elements.adminGiftError, `Erro: ${error.message}`); }
+                 finally { View.hideLoading(); }
+            },
+
+            async handleAdminAddGift(event) {
+                 event.preventDefault(); if (!Model.isAdmin) { /*...*/ return; }
+                 View.showLoading(); View.hideError(View.elements.adminGiftError); View.hideError(View.elements.adminGiftSuccess);
+                 try {
+                     const name = document.getElementById('new-gift-name').value.trim(); const description = document.getElementById('new-gift-desc').value.trim(); const quantity = parseInt(document.getElementById('new-gift-qty').value, 10); const img = document.getElementById('new-gift-img').value.trim();
+                     if (!name || isNaN(quantity) || quantity < 1) throw new Error("Nome e quantidade (>=1) obrigatórios.");
+                     await Model.addGift({ name, description, quantity, img }); // Adiciona no evento correto
+                     View.clearAddGiftForm(); View.showSuccess(View.elements.adminGiftSuccess, `Presente "${name}" adicionado!`);
+                     View.renderAdminGiftList(Model.giftDataCache, this.handleAdminDeleteGift.bind(this));
+                 } catch (error) { console.error("Controller: Erro add gift", error); View.showError(View.elements.adminGiftError, `Erro: ${error.message}`); }
+                 finally { View.hideLoading(); }
+            },
+
+            async handleAdminDeleteGift(giftId, reservedCount) {
+                 if (!Model.isAdmin) { /*...*/ return; }
+                 if (reservedCount > 0) { alert("Não pode excluir presentes já reservados."); return; }
+                 if (!confirm(`Excluir presente ID: ${giftId}?`)) return;
+                 View.showLoading(); View.hideError(View.elements.adminGiftError); View.hideError(View.elements.adminGiftSuccess);
+                 try {
+                     await Model.deleteGift(giftId); // Deleta do evento correto
+                     View.showSuccess(View.elements.adminGiftSuccess, `Presente ${giftId} excluído!`);
+                     View.renderAdminGiftList(Model.giftDataCache, this.handleAdminDeleteGift.bind(this));
+                 } catch (error) { console.error("Controller: Erro delete gift", error); View.showError(View.elements.adminGiftError, `Erro: ${error.message}`); }
+                 finally { View.hideLoading(); }
+            },
+
+            // --- Handlers UI Geral ---
+            setupUIWithConfig() {
+                // Chama métodos da View para atualizar a UI com base no Model.appConfig
+                View.displayWelcomeInfo(Model.appConfig, Model.currentEventId);
+                View.displayEventDetails(Model.appConfig);
+                // Popula form admin se estiver logado como admin
+                 if (Model.isAdmin) {
+                     View.populateAdminForm(Model.appConfig, Model.currentEventId);
+                 }
+            }
+        };
+
+        // --- Inicialização ---
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!firebaseConfig || !firebaseConfig.apiKey || firebaseConfig.apiKey === "SUA_API_KEY") {
+                alert("Configuração do Firebase incompleta!");
+                View.showEventLoadError("Configuração do Firebase incompleta no código HTML.");
+                return;
+            }
+            // Inicia o Controller
+            Controller.init();
+        });
+
+    </script>
+
+</body>
+</html>
