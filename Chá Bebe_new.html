@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chá de Bebê</title> <script src="https://cdn.tailwindcss.com"></script>
+    <title>Chá de Bebê</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <script>
       // Config Tailwind (igual)
       tailwind.config = {
@@ -26,7 +27,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
 
     <style>
-        /* Estilos CSS (iguais à v5/v6) */
+        /* Estilos CSS (iguais) */
         body { font-family: 'Inter', sans-serif; background-color: var(--bg-color, #FFF9F5); color: var(--text-color, #333); }
         .app-section { display: none; min-height: calc(100vh - 60px); padding-bottom: 70px; }
         .app-section.active { display: block; animation: fadeIn 0.5s ease-in-out; }
@@ -57,16 +58,13 @@
         .save-button { background-color: #a7f3d0; color: #059669;}
         .save-button:hover { background-color: #6ee7b7;}
         #admin-auth-button img { margin-bottom: 1px; }
-        /* Estilo para mensagem de erro de Event ID */
         #event-error-section { display: none; text-align: center; padding: 2rem; }
         #event-error-section.active { display: block; }
     </style>
 </head>
 <body class="bg-pastel-bg text-gray-800">
 
-    <div id="loading-overlay" class="loading-overlay visible">
-        <div class="spinner"></div>
-    </div>
+    <div id="loading-overlay" class="loading-overlay visible"> <div class="spinner"></div> </div>
 
     <div id="app" class="container mx-auto max-w-lg p-4">
 
@@ -74,7 +72,7 @@
             <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/alert-triangle.svg" alt="Erro" class="mx-auto h-16 w-16 text-red-500 mb-4">
             <h2 class="text-2xl font-bold text-red-600 mb-4">Erro no Evento</h2>
             <p id="event-error-message" class="text-lg text-gray-700">Não foi possível carregar os dados do evento. Verifique se o link está correto ou contacte o organizador.</p>
-            </section>
+        </section>
 
         <section id="welcome-section" class="app-section text-center p-6">
              <img src="https://placehold.co/150x150/FFC0CB/333333?text=Beb%C3%AA" alt="Ilustração Bebê" id="welcome-image" class="mx-auto mb-6 rounded-full shadow-lg" onerror="this.src='https://placehold.co/150x150/cccccc/ffffff?text=Imagem+Indispon%C3%ADvel'">
@@ -83,11 +81,10 @@
             <p class="text-md mb-2"><strong>Data:</strong> <span id="event-date">...</span></p>
             <p class="text-md mb-6"><strong>Horário:</strong> <span id="event-time">...</span></p>
             <p class="text-gray-600">Estamos muito felizes em compartilhar este momento especial!</p>
-             <button data-action="show-rsvp" class="action-button mt-8 bg-theme-primary hover:bg-theme-secondary text-theme-text font-bold py-3 px-6 rounded-lg shadow-md w-full">
-                Confirmar Presença
-            </button>
+             <button data-action="show-rsvp" class="action-button mt-8 bg-theme-primary hover:bg-theme-secondary text-theme-text font-bold py-3 px-6 rounded-lg shadow-md w-full"> Confirmar Presença </button>
              <p id="admin-uid-info" class="text-xs text-gray-400 mt-4 hidden">Admin UID: <span id="admin-uid-display"></span></p>
-             <p id="event-id-info" class="text-xs text-gray-400 mt-1">ID do Evento: <span id="event-id-display">Carregando...</span></p> </section>
+             <p id="event-id-info" class="text-xs text-gray-400 mt-1">ID do Evento: <span id="event-id-display">Carregando...</span></p>
+        </section>
 
         <section id="rsvp-section" class="app-section p-6">
              <h2 class="text-2xl font-bold text-center text-theme-accent mb-6">Confirme sua Presença</h2>
@@ -136,7 +133,6 @@
             <div class="flex justify-between items-center mb-6"> <h2 class="text-2xl font-bold text-theme-accent">Painel do Administrador</h2> </div>
             <p id="admin-welcome-message" class="text-md mb-4 hidden">Olá, <span id="admin-user-name" class="font-semibold">Admin</span>!</p>
             <p class="bg-yellow-100 border border-yellow-300 text-yellow-800 text-sm p-3 rounded-md mb-6"> <strong class="font-bold">Atenção:</strong> Você está editando o evento <strong id="admin-event-id" class="font-mono">...</strong>. As alterações afetarão este evento específico. </p>
-
             <h3>Detalhes do Evento</h3>
             <form id="admin-event-form">
                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4"> <div> <label for="admin-baby-name">Nome do Bebê:</label> <input type="text" id="admin-baby-name" required> </div> <div> <label for="admin-event-date">Data do Evento:</label> <input type="date" id="admin-event-date" required> </div> <div> <label for="admin-event-time">Hora do Evento:</label> <input type="time" id="admin-event-time" required> </div> <div> <label for="admin-duration">Duração (horas):</label> <input type="number" id="admin-duration" min="1" value="3" required> </div> </div>
@@ -145,10 +141,8 @@
                  <div class="mt-4"> <label for="admin-uids">Admin UIDs (separados por vírgula):</label> <input type="text" id="admin-uids" placeholder="UID1,UID2,..."> </div>
                  <button type="submit" class="action-button save-button mt-6 w-full py-3">Salvar Detalhes do Evento</button>
             </form>
-
              <h3 class="mt-8">Gerenciar Lista de Presentes</h3>
              <div id="admin-gift-list" class="mb-6"> <p id="admin-gift-list-loading">A carregar lista de presentes...</p> </div>
-
              <h3>Adicionar Novo Presente</h3>
              <form id="add-gift-form">
                   <label for="new-gift-name">Nome do Presente:</label> <input type="text" id="new-gift-name" required>
@@ -176,12 +170,8 @@
     <script>
         // --- Configuração do Firebase (SUBSTITUA) ---
         const firebaseConfig = {
-            apiKey: "AIzaSyB6NMSbRKIOyarr2c6oOG7CsXJzuuGQrHw", 
-			authDomain: "chababy001-32f3a.firebaseapp.com", 
-			projectId: "chababy001-32f3a",
-            storageBucket: "chababy001-32f3a.appspot.com", 
-			messagingSenderId: "366959604506", 
-			appId: "1:366959604506:web:0e46294e2c0f8da2bbb2a3"
+            apiKey: "SUA_API_KEY", authDomain: "SEU_PROJECT_ID.firebaseapp.com", projectId: "SEU_PROJECT_ID",
+            storageBucket: "SEU_PROJECT_ID.appspot.com", messagingSenderId: "SEU_SENDER_ID", appId: "SEU_APP_ID"
         };
 
         // --- Inicializar Firebase ---
@@ -194,549 +184,207 @@
         } catch (e) {
             console.error("Erro ao inicializar Firebase:", e);
             alert("Erro crítico na configuração da aplicação.");
-            View.showSection('event-error-section'); // Mostra erro de evento se Firebase falhar
-            View.hideLoading();
+            // Tenta mostrar erro na UI se a View já estiver definida
+            if(typeof View !== 'undefined' && View.showEventLoadError) {
+                 View.showEventLoadError('Erro ao inicializar conexão com serviços.');
+                 View.hideLoading();
+            }
         }
 
         // --- MODEL ---
-        // Responsável pelos dados e interação com o Firestore/Auth
         const Model = {
-            currentEventId: null, // ID do evento carregado da URL
-            appConfig: null,      // Config do evento atual
-            giftDataCache: [],    // Cache de presentes do evento atual
-            currentUser: null,
-            isAdmin: false,
-            currentRsvpData: null,
-            currentRsvpDocId: null,
+            currentEventId: null, appConfig: null, giftDataCache: [], currentUser: null,
+            isAdmin: false, currentRsvpData: null, currentRsvpDocId: null,
 
-            // --- Configuração do Evento (Agora por Event ID) ---
             async loadEventConfig(eventId) {
                 console.log(`Model: Carregando config para evento ${eventId}...`);
                 if (!eventId) throw new Error("ID do Evento não fornecido.");
-                this.currentEventId = eventId; // Armazena o ID atual
-                const docRef = db.collection('events').doc(eventId); // Caminho alterado
+                this.currentEventId = eventId;
+                const docRef = db.collection('events').doc(eventId);
                 const docSnap = await docRef.get();
                 if (docSnap.exists) {
                     this.appConfig = docSnap.data();
                     if (this.appConfig.eventDate?.toDate) this.appConfig.eventDate = this.appConfig.eventDate.toDate();
-                    else this.appConfig.eventDate = new Date();
+                    else { console.warn("Timestamp eventDate inválido"); this.appConfig.eventDate = null; } // Trata data inválida
                     if (!Array.isArray(this.appConfig.adminUids)) this.appConfig.adminUids = [];
                     console.log("Model: Config carregada", this.appConfig);
-                    this.checkAdminStatus(); // Verifica se é admin DESTE evento
+                    this.checkAdminStatus();
                     return this.appConfig;
-                } else {
-                    throw new Error(`Evento com ID '${eventId}' não encontrado!`);
-                }
+                } else { throw new Error(`Evento com ID '${eventId}' não encontrado!`); }
             },
-
             async saveEventConfig(updatedConfigData) {
-                console.log(`Model: Salvando config para evento ${this.currentEventId}...`, updatedConfigData);
-                if (!this.isAdmin || !this.currentEventId) throw new Error("Acesso negado ou evento não carregado.");
-                if (updatedConfigData.eventDate instanceof Date) {
-                    updatedConfigData.eventDate = firebase.firestore.Timestamp.fromDate(updatedConfigData.eventDate);
-                }
-                // Garante que adminUids é um array de strings não vazias
-                 if (updatedConfigData.adminUids && typeof updatedConfigData.adminUids === 'string') {
-                     updatedConfigData.adminUids = updatedConfigData.adminUids.split(',')
-                                                     .map(uid => uid.trim())
-                                                     .filter(uid => uid.length > 0);
-                 } else if (!Array.isArray(updatedConfigData.adminUids)) {
-                     updatedConfigData.adminUids = []; // Garante que seja array
-                 }
-
+                console.log(`Model: Salvando config para evento ${this.currentEventId}...`);
+                if (!this.isAdmin || !this.currentEventId) throw new Error("Acesso negado.");
+                if (updatedConfigData.eventDate instanceof Date) { updatedConfigData.eventDate = firebase.firestore.Timestamp.fromDate(updatedConfigData.eventDate); }
+                if (updatedConfigData.adminUids && typeof updatedConfigData.adminUids === 'string') { updatedConfigData.adminUids = updatedConfigData.adminUids.split(',').map(uid => uid.trim()).filter(uid => uid.length > 0); }
+                else if (!Array.isArray(updatedConfigData.adminUids)) { updatedConfigData.adminUids = []; }
                 await db.collection('events').doc(this.currentEventId).set(updatedConfigData, { merge: true });
                 console.log("Model: Config salva.");
-                await this.loadEventConfig(this.currentEventId); // Recarrega
+                await this.loadEventConfig(this.currentEventId);
             },
-
-            // --- Presentes (Agora por Event ID) ---
             async loadGifts() {
                 console.log(`Model: Carregando presentes para evento ${this.currentEventId}...`);
-                if (!this.currentEventId) throw new Error("Evento não carregado.");
-                // Caminho alterado para subcoleção
+                if (!this.currentEventId) { this.giftDataCache = []; return []; } // Retorna vazio se não há evento
                 const snapshot = await db.collection('events').doc(this.currentEventId).collection('gifts').orderBy('name').get();
                 this.giftDataCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 console.log("Model: Presentes carregados", this.giftDataCache);
                 return this.giftDataCache;
             },
-
             async addGift(newGiftData) {
-                 console.log(`Model: Adicionando presente para evento ${this.currentEventId}...`, newGiftData);
-                 if (!this.isAdmin || !this.currentEventId) throw new Error("Acesso negado ou evento não carregado.");
+                 console.log(`Model: Adicionando presente para evento ${this.currentEventId}...`);
+                 if (!this.isAdmin || !this.currentEventId) throw new Error("Acesso negado.");
                  newGiftData.reserved = 0;
-                 // Caminho alterado para subcoleção
                  const docRef = await db.collection('events').doc(this.currentEventId).collection('gifts').add(newGiftData);
                  console.log("Model: Presente adicionado", docRef.id);
-                 await this.loadGifts();
-                 return docRef.id;
+                 await this.loadGifts(); return docRef.id;
             },
-
             async deleteGift(giftId) {
                 console.log(`Model: Deletando presente ${giftId} do evento ${this.currentEventId}...`);
-                if (!this.isAdmin || !this.currentEventId) throw new Error("Acesso negado ou evento não carregado.");
+                if (!this.isAdmin || !this.currentEventId) throw new Error("Acesso negado.");
                 const giftInCache = this.giftDataCache.find(g => g.id === giftId);
                 if (giftInCache && (giftInCache.reserved || 0) > 0) throw new Error("Não pode excluir presentes já reservados.");
-                 // Caminho alterado para subcoleção
                 await db.collection('events').doc(this.currentEventId).collection('gifts').doc(giftId).delete();
-                console.log("Model: Presente deletado.");
-                await this.loadGifts();
+                console.log("Model: Presente deletado."); await this.loadGifts();
             },
-
-            // --- RSVP (Agora por Event ID) ---
             async findRsvpByEmail(email) {
-                console.log(`Model: Buscando RSVP por email ${email} no evento ${this.currentEventId}...`);
+                 console.log(`Model: Buscando RSVP por email ${email} no evento ${this.currentEventId}...`);
                  if (!this.currentEventId) throw new Error("Evento não carregado.");
-                 // Caminho alterado para subcoleção e query
-                const snapshot = await db.collection('events').doc(this.currentEventId).collection('rsvps').where('email', '==', email).limit(1).get();
-                if (!snapshot.empty) {
-                    const doc = snapshot.docs[0]; this.currentRsvpData = { id: doc.id, ...doc.data() }; this.currentRsvpDocId = doc.id;
-                    console.log("Model: RSVP encontrado", this.currentRsvpData); return this.currentRsvpData;
-                }
-                console.log("Model: Nenhum RSVP encontrado."); this.currentRsvpData = null; this.currentRsvpDocId = null; return null;
+                 // Adiciona try/catch aqui pois esta leitura pode falhar devido a regras (embora não devesse com as regras atuais)
+                 try {
+                     const snapshot = await db.collection('events').doc(this.currentEventId).collection('rsvps').where('email', '==', email).limit(1).get();
+                     if (!snapshot.empty) { const doc = snapshot.docs[0]; this.currentRsvpData = { id: doc.id, ...doc.data() }; this.currentRsvpDocId = doc.id; console.log("Model: RSVP encontrado", this.currentRsvpData); return this.currentRsvpData; }
+                     console.log("Model: Nenhum RSVP encontrado."); this.currentRsvpData = null; this.currentRsvpDocId = null; return null;
+                 } catch(error) {
+                      console.error("Model: Erro ao buscar RSVP por email (verifique regras de leitura para RSVPs):", error);
+                      // Não lança erro aqui, apenas retorna null para não quebrar o fluxo do blur
+                      this.currentRsvpData = null; this.currentRsvpDocId = null; return null;
+                 }
             },
-
             async saveRsvp(rsvpData) {
-                console.log(`Model: Salvando RSVP para evento ${this.currentEventId}...`, rsvpData);
-                 if (!this.currentEventId) throw new Error("Evento não carregado.");
+                console.log(`Model: Salvando RSVP para evento ${this.currentEventId}...`);
+                if (!this.currentEventId) throw new Error("Evento não carregado.");
                 rsvpData.timestamp = firebase.firestore.FieldValue.serverTimestamp();
-                const rsvpCollectionRef = db.collection('events').doc(this.currentEventId).collection('rsvps'); // Ref da subcoleção
-                if (this.currentRsvpDocId) {
-                    await rsvpCollectionRef.doc(this.currentRsvpDocId).update(rsvpData);
-                    console.log("Model: RSVP atualizado", this.currentRsvpDocId);
-                } else {
-                    const docRef = await rsvpCollectionRef.add(rsvpData);
-                    this.currentRsvpDocId = docRef.id;
-                    console.log("Model: RSVP criado", this.currentRsvpDocId);
-                }
-                this.currentRsvpData = { ...rsvpData, id: this.currentRsvpDocId };
-                return true;
+                const rsvpCollectionRef = db.collection('events').doc(this.currentEventId).collection('rsvps');
+                if (this.currentRsvpDocId) { await rsvpCollectionRef.doc(this.currentRsvpDocId).update(rsvpData); console.log("Model: RSVP atualizado", this.currentRsvpDocId); }
+                else { const docRef = await rsvpCollectionRef.add(rsvpData); this.currentRsvpDocId = docRef.id; console.log("Model: RSVP criado", this.currentRsvpDocId); }
+                this.currentRsvpData = { ...rsvpData, id: this.currentRsvpDocId }; return true;
             },
-
             async reserveGiftTransaction(giftId, rsvpDocId, isDrawn) {
-                 console.log(`Model: Iniciando transação de reserva para evento ${this.currentEventId}...`, giftId, rsvpDocId);
+                 console.log(`Model: Iniciando transação de reserva para evento ${this.currentEventId}...`);
                  if (!this.currentEventId) throw new Error("Evento não carregado.");
-                 // Caminhos alterados para subcoleções
                  const giftRef = db.collection('events').doc(this.currentEventId).collection('gifts').doc(giftId);
                  const rsvpRef = db.collection('events').doc(this.currentEventId).collection('rsvps').doc(rsvpDocId);
                  let giftName = '';
-
-                 await db.runTransaction(async (transaction) => {
-                    const giftDoc = await transaction.get(giftRef);
-                    if (!giftDoc.exists) throw new Error(`Presente ${giftId} não encontrado neste evento!`);
-                    const gift = giftDoc.data(); giftName = gift.name; const currentReserved = gift.reserved || 0;
-                    if (currentReserved >= gift.quantity) throw new Error(`"${giftName}" esgotado.`);
-                    transaction.update(giftRef, { reserved: currentReserved + 1 });
-                    transaction.update(rsvpRef, { giftId: giftId, giftName: giftName, drawn: isDrawn });
-                 });
-
-                 console.log("Model: Transação concluída.");
-                 const cachedGift = this.giftDataCache.find(g => g.id === giftId);
-                 if (cachedGift) cachedGift.reserved = (cachedGift.reserved || 0) + 1;
-                 return giftName;
+                 await db.runTransaction(async (t) => { const giftDoc = await t.get(giftRef); if (!giftDoc.exists) throw new Error(`Presente ${giftId} não encontrado!`); const gift = giftDoc.data(); giftName = gift.name; const currentReserved = gift.reserved || 0; if (currentReserved >= gift.quantity) throw new Error(`"${giftName}" esgotado.`); t.update(giftRef, { reserved: currentReserved + 1 }); t.update(rsvpRef, { giftId: giftId, giftName: giftName, drawn: isDrawn }); });
+                 console.log("Model: Transação concluída."); const cachedGift = this.giftDataCache.find(g => g.id === giftId); if (cachedGift) cachedGift.reserved = (cachedGift.reserved || 0) + 1; return giftName;
             },
-
-             // --- Autenticação (igual) ---
-             async signInWithGoogle() { /* ... igual ... */ return await auth.signInWithPopup(googleProvider); },
-             async signOut() { /* ... igual ... */ await auth.signOut(); },
-
-             // --- Estado Interno (Atualizado para verificar admin do evento atual) ---
-             setCurrentUser(user) {
-                 this.currentUser = user;
-                 this.checkAdminStatus(); // Verifica admin para o evento carregado
-             },
-             checkAdminStatus() {
-                 // Só pode ser admin se estiver logado E a config do evento atual foi carregada E o UID está na lista do evento
-                 if (this.currentUser && this.appConfig && this.appConfig.adminUids && this.appConfig.adminUids.includes(this.currentUser.uid)) {
-                     this.isAdmin = true;
-                 } else {
-                     this.isAdmin = false;
-                 }
-                 console.log(`Model: Status Admin para evento ${this.currentEventId}: ${this.isAdmin}`);
-             }
+            async signInWithGoogle() { console.log("Model: Iniciando login..."); const result = await auth.signInWithPopup(googleProvider); console.log("Model: Login OK", result.user?.uid); return result.user; },
+            async signOut() { console.log("Model: Logout..."); await auth.signOut(); console.log("Model: Logout OK."); },
+            setCurrentUser(user) { this.currentUser = user; this.checkAdminStatus(); },
+            checkAdminStatus() { if (this.currentUser && this.appConfig && this.appConfig.adminUids) { this.isAdmin = this.appConfig.adminUids.includes(this.currentUser.uid); } else { this.isAdmin = false; } console.log(`Model: Status Admin para evento ${this.currentEventId}: ${this.isAdmin}`); }
         };
 
         // --- VIEW ---
-        // Responsável por interagir com o DOM (igual à v6, mas adiciona event error section)
         const View = {
-            elements: {
-                loadingOverlay: document.getElementById('loading-overlay'),
-                sections: document.querySelectorAll('.app-section'),
-                eventErrorSection: document.getElementById('event-error-section'), // Nova seção de erro
-                eventErrorMessage: document.getElementById('event-error-message'),
-                // Welcome
-                welcomeImage: document.getElementById('welcome-image'),
-                babyNameWelcome: document.getElementById('baby-name-welcome'),
-                eventDate: document.getElementById('event-date'),
-                eventTime: document.getElementById('event-time'),
-                adminUidInfo: document.getElementById('admin-uid-info'),
-                adminUidDisplay: document.getElementById('admin-uid-display'),
-                eventIdInfo: document.getElementById('event-id-info'), // Para mostrar ID do evento
-                eventIdDisplay: document.getElementById('event-id-display'),
-                // RSVP
-                rsvpForm: document.getElementById('rsvp-form'),
-                guestNameInput: document.getElementById('guest-name'),
-                guestEmailInput: document.getElementById('guest-email'),
-                rsvpError: document.getElementById('rsvp-error'),
-                // Gifts (Guest)
-                giftListContainer: document.getElementById('gift-list-container'),
-                giftListLoading: document.getElementById('gift-list-loading'),
-                giftError: document.getElementById('gift-error'),
-                giftSelectedInfo: document.getElementById('gift-selected-info'),
-                confirmManualGiftBtn: document.getElementById('confirm-manual-gift-button'),
-                // Location
-                eventAddress: document.getElementById('event-address'),
-                mapLink: document.getElementById('map-link'),
-                // Calendar
-                googleCalendarLink: document.getElementById('google-calendar-link'),
-                // Thank You
-                thankyouMessage: document.getElementById('thankyou-message'),
-                // Admin
-                adminSection: document.getElementById('admin-section'),
-                adminWelcomeMsg: document.getElementById('admin-welcome-message'),
-                adminUserName: document.getElementById('admin-user-name'),
-                adminEventId: document.getElementById('admin-event-id'), // Para mostrar ID do evento no admin
-                adminEventForm: document.getElementById('admin-event-form'),
-                adminBabyName: document.getElementById('admin-baby-name'),
-                adminEventDate: document.getElementById('admin-event-date'),
-                adminEventTime: document.getElementById('admin-event-time'),
-                adminDuration: document.getElementById('admin-duration'),
-                adminEventAddress: document.getElementById('admin-event-address'),
-                adminUidsInput: document.getElementById('admin-uids'), // Input para UIDs
-                adminGiftListDiv: document.getElementById('admin-gift-list'),
-                adminGiftListLoading: document.getElementById('admin-gift-list-loading'),
-                addGiftForm: document.getElementById('add-gift-form'),
-                adminGiftError: document.getElementById('admin-gift-error'),
-                adminGiftSuccess: document.getElementById('admin-gift-success'),
-                // Nav
-                mainNav: document.getElementById('main-nav'),
-                navGiftButton: document.getElementById('nav-gift-button'),
-                adminAuthButton: document.getElementById('admin-auth-button')
-            },
-
-            // --- Métodos de Atualização da UI ---
+            elements: { /* ... referências iguais ... */ loadingOverlay: document.getElementById('loading-overlay'), sections: document.querySelectorAll('.app-section'), eventErrorSection: document.getElementById('event-error-section'), eventErrorMessage: document.getElementById('event-error-message'), welcomeImage: document.getElementById('welcome-image'), babyNameWelcome: document.getElementById('baby-name-welcome'), eventDate: document.getElementById('event-date'), eventTime: document.getElementById('event-time'), adminUidInfo: document.getElementById('admin-uid-info'), adminUidDisplay: document.getElementById('admin-uid-display'), eventIdInfo: document.getElementById('event-id-info'), eventIdDisplay: document.getElementById('event-id-display'), rsvpForm: document.getElementById('rsvp-form'), guestNameInput: document.getElementById('guest-name'), guestEmailInput: document.getElementById('guest-email'), rsvpError: document.getElementById('rsvp-error'), giftListContainer: document.getElementById('gift-list-container'), giftListLoading: document.getElementById('gift-list-loading'), giftError: document.getElementById('gift-error'), giftSelectedInfo: document.getElementById('gift-selected-info'), confirmManualGiftBtn: document.getElementById('confirm-manual-gift-button'), eventAddress: document.getElementById('event-address'), mapLink: document.getElementById('map-link'), googleCalendarLink: document.getElementById('google-calendar-link'), thankyouMessage: document.getElementById('thankyou-message'), adminSection: document.getElementById('admin-section'), adminWelcomeMsg: document.getElementById('admin-welcome-message'), adminUserName: document.getElementById('admin-user-name'), adminEventId: document.getElementById('admin-event-id'), adminEventForm: document.getElementById('admin-event-form'), adminBabyName: document.getElementById('admin-baby-name'), adminEventDate: document.getElementById('admin-event-date'), adminEventTime: document.getElementById('admin-event-time'), adminDuration: document.getElementById('admin-duration'), adminEventAddress: document.getElementById('admin-event-address'), adminUidsInput: document.getElementById('admin-uids'), adminGiftListDiv: document.getElementById('admin-gift-list'), adminGiftListLoading: document.getElementById('admin-gift-list-loading'), addGiftForm: document.getElementById('add-gift-form'), adminGiftError: document.getElementById('admin-gift-error'), adminGiftSuccess: document.getElementById('admin-gift-success'), mainNav: document.getElementById('main-nav'), navGiftButton: document.getElementById('nav-gift-button'), adminAuthButton: document.getElementById('admin-auth-button') },
             showLoading() { this.elements.loadingOverlay?.classList.add('visible'); },
             hideLoading() { this.elements.loadingOverlay?.classList.remove('visible'); },
-
-            showSection(sectionId) {
-                this.elements.sections.forEach(section => section.classList.remove('active'));
-                const activeSection = document.getElementById(sectionId);
-                if (activeSection) activeSection.classList.add('active');
-                else console.warn(`View: Seção com ID '${sectionId}' não encontrada.`);
-                window.scrollTo(0, 0);
-            },
-             // Mostra a seção de erro de evento
-             showEventLoadError(message) {
-                 if (this.elements.eventErrorMessage) this.elements.eventErrorMessage.textContent = message;
-                 this.showSection('event-error-section');
-                 this.hideLoading(); // Esconde loading se deu erro
-                 // Opcional: esconder a barra de navegação em caso de erro fatal
-                 // if (this.elements.mainNav) this.elements.mainNav.classList.add('hidden');
-             },
-
+            showSection(sectionId) { this.elements.sections.forEach(section => section.classList.remove('active')); const activeSection = document.getElementById(sectionId); if (activeSection) activeSection.classList.add('active'); else console.warn(`View: Seção '${sectionId}' não encontrada.`); window.scrollTo(0, 0); },
+            showEventLoadError(message) { if (this.elements.eventErrorMessage) this.elements.eventErrorMessage.textContent = message; this.showSection('event-error-section'); this.hideLoading(); },
             showError(element, message) { if(element) { element.textContent = message; element.classList.remove('hidden'); } else { console.error("View: Elemento de erro não encontrado:", element); } },
             hideError(element) { if(element) { element.classList.add('hidden'); element.textContent = ''; } },
             showSuccess(element, message) { if(element) { element.textContent = message; element.classList.remove('hidden'); setTimeout(() => this.hideError(element), 4000); } },
-
-            applyTheme(themeColor = 'pink') { /* ... igual ... */
-                 console.log("View: Aplicando tema:", themeColor); const root = document.documentElement; let primary, secondary, accent, text = '#333333'; switch (themeColor) { case 'blue': primary = '#ADD8E6'; secondary = '#B0E0E6'; accent = '#87CEFA'; text = '#00008B'; break; case 'green': primary = '#98FB98'; secondary = '#90EE90'; accent = '#3CB371'; text = '#006400'; break; case 'yellow': primary = '#FFFFE0'; secondary = '#FFFACD'; accent = '#FFD700'; text = '#8B4513'; break; case 'pink': default: primary = '#FFC0CB'; secondary = '#FFB6C1'; accent = '#FF69B4'; text = '#333333'; break; } root.style.setProperty('--primary-color', primary); root.style.setProperty('--secondary-color', secondary); root.style.setProperty('--accent-color', accent); root.style.setProperty('--text-color', text); const spinner = document.querySelector('.spinner'); if (spinner) spinner.style.borderLeftColor = primary; if (this.elements.welcomeImage && this.elements.welcomeImage.src.includes('placehold.co')) { try { const urlParts = this.elements.welcomeImage.src.split('/'); const size = urlParts[3]; const colorsText = urlParts[4].split('?'); const textPart = colorsText[1] || ''; const bgColor = primary.substring(1); const textColorHex = text.substring(1); const textColor = textColorHex.length === 6 ? textColorHex : '333333'; this.elements.welcomeImage.src = `https://placehold.co/${size}/${bgColor}/${textColor}?${textPart}`; } catch (e) { console.warn("View: Não foi possível atualizar cor da imagem placeholder."); } }
-             },
-
-            displayWelcomeInfo(config, eventId) { /* ... igual, mas mostra eventId ... */
-                 if (!config) return; document.title = `Chá de Bebê da ${config.babyName || '[Nome]'}`; this.elements.babyNameWelcome.textContent = config.babyName || '[Nome]'; if (config.eventDate instanceof Date) { this.elements.eventDate.textContent = config.eventDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }); this.elements.eventTime.textContent = config.eventDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); } else { this.elements.eventDate.textContent = "Data Indefinida"; this.elements.eventTime.textContent = ""; } if(this.elements.eventIdDisplay) this.elements.eventIdDisplay.textContent = eventId || 'N/A';
-             },
-            displayEventDetails(config) { /* ... igual ... */
-                 if (!config) return; const address = config.eventAddress || "Endereço não definido"; this.elements.eventAddress.textContent = address; const mapQuery = encodeURIComponent(address); this.elements.mapLink.href = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`; if (config.eventDate instanceof Date) { const startTime = config.eventDate; const duration = config.durationHours || 3; const endTime = new Date(startTime.getTime() + duration * 60 * 60 * 1000); const formatGoogleDate = (d) => d.toISOString().replace(/-|:|\.\d{3}/g, ''); const googleStartDate = formatGoogleDate(startTime); const googleEndDate = formatGoogleDate(endTime); const calendarText = encodeURIComponent(`Chá de Bebê da ${config.babyName}`); const calendarDetails = encodeURIComponent(`Venha celebrar conosco! Local: ${address}`); const calendarLocation = encodeURIComponent(address); const googleLink = `https://www.google.com/calendar/render?action=TEMPLATE&text=${calendarText}&dates=${googleStartDate}/${googleEndDate}&details=${calendarDetails}&location=${calendarLocation}`; this.elements.googleCalendarLink.href = googleLink; this.elements.googleCalendarLink.onclick = null; } else { this.elements.googleCalendarLink.href = '#'; this.elements.googleCalendarLink.onclick = (e) => { e.preventDefault(); alert("Data do evento não definida."); }; }
-             },
-            updateAdminAuthButton(isUserAdmin, user) { /* ... igual ... */
-                 const icon = this.elements.adminAuthButton.querySelector('img'); const text = this.elements.adminAuthButton.querySelector('span'); if (isUserAdmin) { icon.src = 'https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/log-out.svg'; icon.alt = 'Sair Admin'; text.textContent = 'Sair'; this.elements.adminAuthButton.classList.remove('text-gray-600', 'hover:text-theme-primary'); this.elements.adminAuthButton.classList.add('text-red-500', 'hover:text-red-700'); this.elements.adminUidDisplay.textContent = user?.uid || 'N/A'; this.elements.adminUidInfo.classList.remove('hidden'); this.elements.adminUserName.textContent = user?.displayName || user?.email || 'Admin'; this.elements.adminWelcomeMsg.classList.remove('hidden'); } else { icon.src = 'https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/log-in.svg'; icon.alt = 'Login Admin'; text.textContent = 'Admin'; this.elements.adminAuthButton.classList.add('text-gray-600', 'hover:text-theme-primary'); this.elements.adminAuthButton.classList.remove('text-red-500', 'hover:text-red-700'); this.elements.adminUidInfo.classList.add('hidden'); this.elements.adminWelcomeMsg.classList.add('hidden'); }
-             },
+            applyTheme(themeColor = 'pink') { /* ... igual ... */ console.log("View: Aplicando tema:", themeColor); const root = document.documentElement; let p, s, a, t = '#333'; switch (themeColor) { case 'blue': p = '#ADD8E6'; s = '#B0E0E6'; a = '#87CEFA'; t = '#00008B'; break; case 'green': p = '#98FB98'; s = '#90EE90'; a = '#3CB371'; t = '#006400'; break; case 'yellow': p = '#FFFFE0'; s = '#FFFACD'; a = '#FFD700'; t = '#8B4513'; break; case 'pink': default: p = '#FFC0CB'; s = '#FFB6C1'; a = '#FF69B4'; t = '#333'; break; } root.style.setProperty('--primary-color', p); root.style.setProperty('--secondary-color', s); root.style.setProperty('--accent-color', a); root.style.setProperty('--text-color', t); const spin = document.querySelector('.spinner'); if (spin) spin.style.borderLeftColor = p; const img = this.elements.welcomeImage; if (img && img.src.includes('placehold.co')) { try { const parts = img.src.split('/'); const size = parts[3]; const ct = parts[4].split('?'); const txt = ct[1] || ''; const bg = p.substring(1); const tcH = t.substring(1); const tc = tcH.length === 6 ? tcH : '333'; img.src = `https://placehold.co/${size}/${bg}/${tc}?${txt}`; } catch (e) { console.warn("View: Falha placeholder img."); } } },
+            displayWelcomeInfo(config, eventId) {
+                // *** ADICIONADO LOG DE DIAGNÓSTICO ***
+                console.log("View: Recebido para UI -> ", config);
+                if (!config) { console.log("View: displayWelcomeInfo chamado sem config."); return; }
+                document.title = `Chá de Bebê da ${config.babyName || '[Nome]'}`;
+                if(this.elements.babyNameWelcome) this.elements.babyNameWelcome.textContent = config.babyName || '...'; // Usa '...' se nome vazio
+                if (config.eventDate instanceof Date) {
+                    if(this.elements.eventDate) this.elements.eventDate.textContent = config.eventDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+                    if(this.elements.eventTime) this.elements.eventTime.textContent = config.eventDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+                } else {
+                    console.log("View: eventDate não é instância de Date:", config.eventDate);
+                    if(this.elements.eventDate) this.elements.eventDate.textContent = "Inválida"; // Indica data inválida
+                    if(this.elements.eventTime) this.elements.eventTime.textContent = "";
+                }
+                if(this.elements.eventIdDisplay) this.elements.eventIdDisplay.textContent = eventId || 'N/A';
+            },
+            displayEventDetails(config) { /* ... igual ... */ if (!config) return; const address = config.eventAddress || "Endereço não definido"; this.elements.eventAddress.textContent = address; const mapQuery = encodeURIComponent(address); this.elements.mapLink.href = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`; /* Usando link de busca */ if (config.eventDate instanceof Date) { const startTime = config.eventDate; const duration = config.durationHours || 3; const endTime = new Date(startTime.getTime() + duration * 60 * 60 * 1000); const formatGoogleDate = (d) => d.toISOString().replace(/-|:|\.\d{3}/g, ''); const googleStartDate = formatGoogleDate(startTime); const googleEndDate = formatGoogleDate(endTime); const calendarText = encodeURIComponent(`Chá de Bebê da ${config.babyName}`); const calendarDetails = encodeURIComponent(`Venha celebrar conosco! Local: ${address}`); const calendarLocation = encodeURIComponent(address); const googleLink = `https://www.google.com/calendar/render?action=TEMPLATE&text=${calendarText}&dates=${googleStartDate}/${googleEndDate}&details=${calendarDetails}&location=${calendarLocation}`; this.elements.googleCalendarLink.href = googleLink; this.elements.googleCalendarLink.onclick = null; } else { this.elements.googleCalendarLink.href = '#'; this.elements.googleCalendarLink.onclick = (e) => { e.preventDefault(); alert("Data do evento não definida."); }; } },
+            updateAdminAuthButton(isUserAdmin, user) { /* ... igual ... */ const icon = this.elements.adminAuthButton.querySelector('img'); const text = this.elements.adminAuthButton.querySelector('span'); if (isUserAdmin) { icon.src = 'https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/log-out.svg'; icon.alt = 'Sair Admin'; text.textContent = 'Sair'; this.elements.adminAuthButton.classList.remove('text-gray-600', 'hover:text-theme-primary'); this.elements.adminAuthButton.classList.add('text-red-500', 'hover:text-red-700'); this.elements.adminUidDisplay.textContent = user?.uid || 'N/A'; this.elements.adminUidInfo.classList.remove('hidden'); this.elements.adminUserName.textContent = user?.displayName || user?.email || 'Admin'; this.elements.adminWelcomeMsg.classList.remove('hidden'); } else { icon.src = 'https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/log-in.svg'; icon.alt = 'Login Admin'; text.textContent = 'Admin'; this.elements.adminAuthButton.classList.add('text-gray-600', 'hover:text-theme-primary'); this.elements.adminAuthButton.classList.remove('text-red-500', 'hover:text-red-700'); this.elements.adminUidInfo.classList.add('hidden'); this.elements.adminWelcomeMsg.classList.add('hidden'); } },
             updateNavGiftButton(enabled) { if (this.elements.navGiftButton) this.elements.navGiftButton.disabled = !enabled; },
-            // --- UI RSVP (igual) ---
             fillRsvpForm(rsvpData) { if (this.elements.guestNameInput) this.elements.guestNameInput.value = rsvpData.name; const radio = document.querySelector(`input[name="attending"][value="${rsvpData.attending}"]`); if (radio) radio.checked = true; },
             clearRsvpForm() { if (this.elements.rsvpForm) this.elements.rsvpForm.reset(); },
             displayRsvpSuccess(name) { if (this.elements.thankyouMessage) this.elements.thankyouMessage.textContent = `Obrigado, ${name}! Sua resposta foi registada.`; },
             displayRsvpNo(name) { if (this.elements.thankyouMessage) this.elements.thankyouMessage.textContent = `Obrigado, ${name}! Sentiremos sua falta.`; },
-            // --- UI Presentes Convidado (igual) ---
             renderGiftList(gifts, onSelectCallback) { /* ... igual ... */ this.elements.giftListContainer.innerHTML = ''; this.hideError(this.elements.giftError); this.elements.giftListLoading.classList.add('hidden'); let hasAvailableGifts = false; if (!gifts || gifts.length === 0) { this.elements.giftListContainer.innerHTML = '<p class="text-center text-gray-500 col-span-full">Nenhum presente disponível.</p>'; return; } gifts.forEach(gift => { const reserved = gift.reserved || 0; const available = gift.quantity - reserved; if (available > 0) { hasAvailableGifts = true; const itemDiv = document.createElement('div'); itemDiv.className = 'gift-item border border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:shadow-md bg-white'; itemDiv.dataset.giftId = gift.id; itemDiv.innerHTML = ` <img src="${gift.img || 'https://placehold.co/100x100/cccccc/ffffff?text=Img'}" alt="${gift.name}" class="h-16 w-16 mx-auto mb-2 rounded object-cover" onerror="this.src='https://placehold.co/100x100/cccccc/ffffff?text=Img'"> <p class="font-semibold text-sm">${gift.name}</p> <p class="text-xs text-gray-500">${gift.description || ''}</p> <p class="text-xs text-blue-500 mt-1">Disponível: ${available}</p>`; itemDiv.addEventListener('click', () => onSelectCallback(gift.id, itemDiv)); this.elements.giftListContainer.appendChild(itemDiv); } }); if (!hasAvailableGifts) { this.elements.giftListContainer.innerHTML = '<p class="text-center text-gray-500 col-span-full">Todos presentes escolhidos.</p>'; } },
             selectGiftUI(element) { /* ... igual ... */ document.querySelectorAll('.gift-item.selected').forEach(el => el.classList.remove('selected', 'border-2', 'border-theme-accent')); element.classList.add('selected', 'border-2', 'border-theme-accent'); this.elements.confirmManualGiftBtn.classList.remove('hidden'); this.hideError(this.elements.giftError); this.hideError(this.elements.giftSelectedInfo); },
             clearGiftSelectionUI() { /* ... igual ... */ document.querySelectorAll('.gift-item.selected').forEach(el => el.classList.remove('selected', 'border-2', 'border-theme-accent')); this.elements.confirmManualGiftBtn.classList.add('hidden'); },
             displayGiftResult(message, isSuccess) { /* ... igual ... */ const element = isSuccess ? this.elements.giftSelectedInfo : this.elements.giftError; this.showError(element === this.elements.giftError ? this.elements.giftSelectedInfo : this.elements.giftError, ''); if (isSuccess) this.showSuccess(element, message); else this.showError(element, message); },
-            // --- UI Admin (Atualizada) ---
-            populateAdminForm(config, eventId) {
-                if (!config) return;
-                 if(this.elements.adminEventId) this.elements.adminEventId.textContent = eventId || 'N/A'; // Mostra ID do evento
-                try {
-                    this.elements.adminBabyName.value = config.babyName || '';
-                    if (config.eventDate instanceof Date) { const dateStr = config.eventDate.getFullYear() + '-' + ('0' + (config.eventDate.getMonth() + 1)).slice(-2) + '-' + ('0' + config.eventDate.getDate()).slice(-2); const timeStr = ('0' + config.eventDate.getHours()).slice(-2) + ':' + ('0' + config.eventDate.getMinutes()).slice(-2); this.elements.adminEventDate.value = dateStr; this.elements.adminEventTime.value = timeStr; } else { this.elements.adminEventDate.value = ''; this.elements.adminEventTime.value = ''; }
-                    this.elements.adminEventAddress.value = config.eventAddress || ''; this.elements.adminDuration.value = config.durationHours || 3;
-                    const themeRadio = document.querySelector(`input[name="theme"][value="${config.themeColor || 'pink'}"]`); if (themeRadio) themeRadio.checked = true;
-                    // Preenche campo de Admin UIDs
-                     if (this.elements.adminUidsInput) this.elements.adminUidsInput.value = (config.adminUids || []).join(', ');
-                } catch (e) { console.error("View: Erro ao popular form admin:", e); this.showError(this.elements.adminGiftError, "Erro ao carregar dados do formulário."); }
-            },
-            renderAdminGiftList(gifts, deleteCallback) { /* ... igual ... */
-                 this.elements.adminGiftListDiv.innerHTML = ''; if(this.elements.adminGiftListLoading) this.elements.adminGiftListLoading.classList.add('hidden'); if (!gifts || gifts.length === 0) { this.elements.adminGiftListDiv.innerHTML = '<p class="text-gray-500">Nenhum presente cadastrado.</p>'; return; } gifts.forEach(gift => { const reserved = gift.reserved || 0; const div = document.createElement('div'); div.className = 'flex justify-between items-center flex-wrap'; div.innerHTML = ` <div class="mb-2 mr-2"> <p class="font-semibold">${gift.name} <span class="text-xs text-gray-400">(ID: ${gift.id})</span></p> <p class="text-sm text-gray-600">${gift.description || 'Sem descrição'}</p> <p class="text-sm">Qtd Total: ${gift.quantity} | Reservados: ${reserved}</p> ${gift.img ? `<a href="${gift.img}" target="_blank" class="text-xs text-blue-500 hover:underline">Ver Imagem</a>` : '<span class="text-xs text-gray-400">Sem Imagem</span>'} </div> <div class="flex-shrink-0"> <button data-action="delete-gift" data-gift-id="${gift.id}" data-reserved-count="${reserved}" class="delete-button text-xs" ${reserved > 0 ? 'disabled title="Não pode excluir presentes já reservados"' : ''}> Excluir </button> </div>`; this.elements.adminGiftListDiv.appendChild(div); });
-             },
+            populateAdminForm(config, eventId) { /* ... igual, mas preenche UIDs ... */ if (!config) return; if(this.elements.adminEventId) this.elements.adminEventId.textContent = eventId || 'N/A'; try { this.elements.adminBabyName.value = config.babyName || ''; if (config.eventDate instanceof Date) { const dateStr = config.eventDate.getFullYear() + '-' + ('0' + (config.eventDate.getMonth() + 1)).slice(-2) + '-' + ('0' + config.eventDate.getDate()).slice(-2); const timeStr = ('0' + config.eventDate.getHours()).slice(-2) + ':' + ('0' + config.eventDate.getMinutes()).slice(-2); this.elements.adminEventDate.value = dateStr; this.elements.adminEventTime.value = timeStr; } else { this.elements.adminEventDate.value = ''; this.elements.adminEventTime.value = ''; } this.elements.adminEventAddress.value = config.eventAddress || ''; this.elements.adminDuration.value = config.durationHours || 3; const themeRadio = document.querySelector(`input[name="theme"][value="${config.themeColor || 'pink'}"]`); if (themeRadio) themeRadio.checked = true; if (this.elements.adminUidsInput) this.elements.adminUidsInput.value = (config.adminUids || []).join(', '); } catch (e) { console.error("View: Erro ao popular form admin:", e); this.showError(this.elements.adminGiftError, "Erro ao carregar dados do formulário."); } },
+            renderAdminGiftList(gifts, deleteCallback) { /* ... igual ... */ this.elements.adminGiftListDiv.innerHTML = ''; if(this.elements.adminGiftListLoading) this.elements.adminGiftListLoading.classList.add('hidden'); if (!gifts || gifts.length === 0) { this.elements.adminGiftListDiv.innerHTML = '<p class="text-gray-500">Nenhum presente cadastrado.</p>'; return; } gifts.forEach(gift => { const reserved = gift.reserved || 0; const div = document.createElement('div'); div.className = 'flex justify-between items-center flex-wrap'; div.innerHTML = ` <div class="mb-2 mr-2"> <p class="font-semibold">${gift.name} <span class="text-xs text-gray-400">(ID: ${gift.id})</span></p> <p class="text-sm text-gray-600">${gift.description || 'Sem descrição'}</p> <p class="text-sm">Qtd Total: ${gift.quantity} | Reservados: ${reserved}</p> ${gift.img ? `<a href="${gift.img}" target="_blank" class="text-xs text-blue-500 hover:underline">Ver Imagem</a>` : '<span class="text-xs text-gray-400">Sem Imagem</span>'} </div> <div class="flex-shrink-0"> <button data-action="delete-gift" data-gift-id="${gift.id}" data-reserved-count="${reserved}" class="delete-button text-xs" ${reserved > 0 ? 'disabled title="Não pode excluir presentes já reservados"' : ''}> Excluir </button> </div>`; this.elements.adminGiftListDiv.appendChild(div); }); },
             clearAddGiftForm() { if(this.elements.addGiftForm) this.elements.addGiftForm.reset(); }
         };
 
         // --- CONTROLLER ---
-        // Orquestra a aplicação, lida com eventos e conecta Model e View
         const Controller = {
-            selectedGiftId: null, // Estado da seleção manual
+            selectedGiftId: null,
 
-            // Inicializa a aplicação
             init() {
                 console.log("Controller: Inicializando aplicação...");
                 View.showLoading();
-                this.setupEventListeners(); // Configura listeners primeiro
-
-                // 1. Pega o eventId da URL
+                this.setupEventListeners();
                 const urlParams = new URLSearchParams(window.location.search);
                 const eventId = urlParams.get('event');
-                View.elements.eventIdDisplay.textContent = eventId || 'Nenhum'; // Mostra na UI
+                if(View.elements.eventIdDisplay) View.elements.eventIdDisplay.textContent = eventId || 'Nenhum';
 
                 if (!eventId) {
-                    console.error("Controller: Event ID não encontrado na URL (?event=...).");
+                    console.error("Controller: Event ID não encontrado na URL.");
                     View.showEventLoadError("ID do evento não encontrado na URL. Verifique o link.");
-                    return; // Para a inicialização
+                    return;
                 }
 
-                // 2. Carrega a configuração do evento específico
                 Model.loadEventConfig(eventId)
                     .then(config => {
-                        // 3. Config carregada, configura o listener de Auth
+                        this.setupUIWithConfig(); // Chama a atualização da UI aqui
                         this.setupAuthListener();
-                        // 4. Carrega presentes para este evento
-                        return Model.loadGifts();
+                        return Model.loadGifts(); // Carrega presentes depois
                     })
                     .then(() => {
                         console.log("Controller: Configuração e presentes carregados.");
-                        // A UI inicial é atualizada em setupUIWithConfig e onAuthStateChanged
-                        // Mostra a seção de boas-vindas após carregar
-                        View.showSection('welcome-section');
+                        View.showSection('welcome-section'); // Mostra welcome após carregar
                     })
                     .catch(error => {
                         console.error("Controller: Erro na inicialização:", error);
-                        View.showEventLoadError(`Erro ao carregar dados do evento: ${error.message}`);
+                        View.showEventLoadError(`Erro ao carregar evento: ${error.message}`);
                     })
-                    .finally(() => {
-                        // Esconde loading GERAL apenas após tentar carregar tudo
-                        // (loadGifts pode ter seu próprio loading interno)
-                        View.hideLoading();
-                    });
+                    .finally(() => { View.hideLoading(); });
             },
 
-            // Configura listeners de eventos da UI
-            setupEventListeners() {
-                console.log("Controller: Configurando listeners...");
-                // Listener geral na navegação e body para data-action
-                View.elements.mainNav.addEventListener('click', (e) => this.handleActionClick(e));
-                document.body.addEventListener('click', (e) => this.handleActionClick(e)); // Para botões fora da nav
-                // Formulários
-                View.elements.rsvpForm?.addEventListener('submit', (e) => this.handleRsvpSubmit(e));
-                View.elements.guestEmailInput?.addEventListener('blur', (e) => this.handleRsvpEmailBlur(e));
-                View.elements.adminEventForm?.addEventListener('submit', (e) => this.handleAdminSaveConfig(e));
-                View.elements.addGiftForm?.addEventListener('submit', (e) => this.handleAdminAddGift(e));
-                // Lista de presentes admin (delegação)
-                View.elements.adminGiftListDiv?.addEventListener('click', (e) => {
-                    const button = e.target.closest('button[data-action="delete-gift"]');
-                    if (button) {
-                        const giftId = button.dataset.giftId;
-                        const reservedCount = parseInt(button.dataset.reservedCount, 10);
-                        this.handleAdminDeleteGift(giftId, reservedCount);
-                    }
-                });
-                 // Lista de presentes convidado (delegação - mais robusto que adicionar listener a cada item)
-                 View.elements.giftListContainer?.addEventListener('click', (e) => {
-                     const giftItem = e.target.closest('.gift-item');
-                     if (giftItem && giftItem.dataset.giftId) {
-                         this.handleGiftSelect(giftItem.dataset.giftId, giftItem);
-                     }
-                 });
-            },
-
-             // Handler centralizado para cliques com data-action
-             handleActionClick(event) {
-                 const button = event.target.closest('[data-action]');
-                 if (!button) return;
-                 const action = button.dataset.action;
-                 console.log("Controller: Action triggered:", action);
-
-                 // Previne ações se a config não carregou (exceto login admin)
-                  if (!Model.appConfig && action !== 'admin-auth') {
-                      alert("Aguarde o carregamento dos dados do evento.");
-                      return;
-                  }
-
-                 switch (action) {
-                     // Navegação
-                     case 'show-welcome': View.showSection('welcome-section'); break;
-                     case 'show-rsvp': View.showSection('rsvp-section'); break;
-                     case 'show-gift': View.showSection('gift-section'); break;
-                     case 'show-location': View.showSection('location-section'); break;
-                     case 'show-calendar': View.showSection('calendar-section'); break;
-                     // Ações
-                     case 'admin-auth': this.handleAdminAuth(); break;
-                     case 'confirm-manual-gift': this.handleConfirmManualGift(); break;
-                     case 'draw-gift': this.handleDrawGift(); break;
-                     // Adicione outras ações aqui
-                 }
-             },
-
-
-            // Configura listener de autenticação
-            setupAuthListener() {
-                auth.onAuthStateChanged(async (user) => {
-                    console.log("Controller: Auth state changed", user?.uid);
-                    Model.setCurrentUser(user); // Atualiza usuário no Model (que verifica admin)
-                    View.updateAdminAuthButton(Model.isAdmin, Model.currentUser); // Atualiza botão
-
-                    // Reavalia botão de presente
-                    View.updateNavGiftButton(Model.appConfig && (Model.isAdmin || Model.currentRsvpData?.attending === 'yes'));
-
-                    // Redireciona se não for admin e estiver na seção admin
-                    if (!Model.isAdmin && View.elements.adminSection.classList.contains('active')) {
-                        View.showSection('welcome-section');
-                    }
-                    // Popula form admin se acabou de logar como admin e está na seção
-                    if (Model.isAdmin && View.elements.adminSection.classList.contains('active')) {
-                         View.populateAdminForm(Model.appConfig, Model.currentEventId);
-                         View.renderAdminGiftList(Model.giftDataCache, this.handleAdminDeleteGift.bind(this));
-                     }
-                });
-            },
+            setupEventListeners() { /* ... igual ... */ console.log("Controller: Configurando listeners..."); View.elements.mainNav.addEventListener('click', (e) => this.handleActionClick(e)); document.body.addEventListener('click', (e) => this.handleActionClick(e)); View.elements.rsvpForm?.addEventListener('submit', (e) => this.handleRsvpSubmit(e)); View.elements.guestEmailInput?.addEventListener('blur', (e) => this.handleRsvpEmailBlur(e)); View.elements.adminEventForm?.addEventListener('submit', (e) => this.handleAdminSaveConfig(e)); View.elements.addGiftForm?.addEventListener('submit', (e) => this.handleAdminAddGift(e)); View.elements.adminGiftListDiv?.addEventListener('click', (e) => { const button = e.target.closest('button[data-action="delete-gift"]'); if (button) { const giftId = button.dataset.giftId; const reservedCount = parseInt(button.dataset.reservedCount, 10); this.handleAdminDeleteGift(giftId, reservedCount); } }); View.elements.giftListContainer?.addEventListener('click', (e) => { const giftItem = e.target.closest('.gift-item'); if (giftItem && giftItem.dataset.giftId) { this.handleGiftSelect(giftItem.dataset.giftId, giftItem); } }); },
+            handleActionClick(event) { /* ... igual ... */ const button = event.target.closest('[data-action]'); if (!button) return; const action = button.dataset.action; console.log("Controller: Action triggered:", action); if (!Model.appConfig && action !== 'admin-auth' && action !== 'show-welcome') { alert("Aguarde o carregamento."); return; } switch (action) { case 'show-welcome': View.showSection('welcome-section'); break; case 'show-rsvp': View.showSection('rsvp-section'); break; case 'show-gift': View.showSection('gift-section'); break; case 'show-location': View.showSection('location-section'); break; case 'show-calendar': View.showSection('calendar-section'); break; case 'admin-auth': this.handleAdminAuth(); break; case 'confirm-manual-gift': this.handleConfirmManualGift(); break; case 'draw-gift': this.handleDrawGift(); break; } },
+            setupAuthListener() { /* ... igual ... */ auth.onAuthStateChanged(async (user) => { console.log("Controller: Auth state changed", user?.uid); Model.setCurrentUser(user); View.updateAdminAuthButton(Model.isAdmin, Model.currentUser); View.updateNavGiftButton(Model.appConfig && (Model.isAdmin || Model.currentRsvpData?.attending === 'yes')); if (!Model.isAdmin && View.elements.adminSection.classList.contains('active')) { View.showSection('welcome-section'); } if (Model.isAdmin && View.elements.adminSection.classList.contains('active')) { View.populateAdminForm(Model.appConfig, Model.currentEventId); View.renderAdminGiftList(Model.giftDataCache, this.handleAdminDeleteGift.bind(this)); } }); },
 
             // --- Handlers de Eventos (Adaptados para usar Model e View) ---
-            async handleRsvpSubmit(event) {
-                event.preventDefault(); View.hideError(View.elements.rsvpError);
-                if (!Model.appConfig) { /* ... erro ... */ return; }
-                const name = View.elements.guestNameInput.value.trim(); const email = View.elements.guestEmailInput.value.trim(); const attendingRadio = document.querySelector('input[name="attending"]:checked');
-                if (!name || !email || !attendingRadio || !/^\S+@\S+\.\S+$/.test(email)) { View.showError(View.elements.rsvpError, "Preencha corretamente."); return; }
-                const attending = attendingRadio.value;
-                View.showLoading();
-                try {
-                    await Model.findRsvpByEmail(email); // Atualiza Model.currentRsvpDocId
-                    const rsvp = { name, email, attending };
-                    if (attending === 'no' && Model.currentRsvpData?.giftId) { rsvp.giftId = null; rsvp.giftName = null; rsvp.drawn = null; }
-                    await Model.saveRsvp(rsvp); // Salva no evento correto (Model sabe o ID)
-                    if (attending === 'yes') { View.showSection('gift-section'); }
-                    else { View.displayRsvpNo(name); View.showSection('thankyou-section'); }
-                } catch (error) { console.error("Controller: Erro RSVP submit", error); View.showError(View.elements.rsvpError, `Erro: ${error.message}`); }
-                finally { View.hideLoading(); }
+            async handleRsvpSubmit(event) { /* ... igual ... */ event.preventDefault(); View.hideError(View.elements.rsvpError); if (!Model.appConfig) { return; } const name = View.elements.guestNameInput.value.trim(); const email = View.elements.guestEmailInput.value.trim(); const attendingRadio = document.querySelector('input[name="attending"]:checked'); if (!name || !email || !attendingRadio || !/^\S+@\S+\.\S+$/.test(email)) { View.showError(View.elements.rsvpError, "Preencha corretamente."); return; } const attending = attendingRadio.value; View.showLoading(); try { await Model.findRsvpByEmail(email); const rsvp = { name, email, attending }; if (attending === 'no' && Model.currentRsvpData?.giftId) { rsvp.giftId = null; rsvp.giftName = null; rsvp.drawn = null; } await Model.saveRsvp(rsvp); if (attending === 'yes') { View.showSection('gift-section'); } else { View.displayRsvpNo(name); View.showSection('thankyou-section'); } } catch (error) { console.error("Controller: Erro RSVP submit", error); View.showError(View.elements.rsvpError, `Erro: ${error.message}`); } finally { View.hideLoading(); } },
+            async handleRsvpEmailBlur(event) { // Verificação Firestore removida
+                 console.log("Controller: Email blur - verificação Firestore removida.");
+                 // Poderia adicionar validação de formato de email aqui se desejado
+                 // const email = event.target.value.trim();
+                 // if (email.length > 0 && !/^\S+@\S+\.\S+$/.test(email)) {
+                 //     View.showError(View.elements.rsvpError, "Formato de email inválido.");
+                 // } else {
+                 //     View.hideError(View.elements.rsvpError);
+                 // }
             },
-
-            async handleRsvpEmailBlur(event) {
-                const email = event.target.value.trim(); View.hideError(View.elements.rsvpError);
-                if (!Model.appConfig || !/^\S+@\S+\.\S+$/.test(email)) return;
-                View.showLoading();
-                try {
-                    const existingRsvp = await Model.findRsvpByEmail(email); // Busca no evento correto
-                    if (existingRsvp) { View.fillRsvpForm(existingRsvp); }
-                    else { View.elements.guestNameInput.value = ''; document.querySelectorAll('input[name="attending"]').forEach(r => r.checked = false); }
-                    View.updateNavGiftButton(Model.appConfig && (Model.isAdmin || existingRsvp?.attending === 'yes'));
-                } catch (error) { console.error("Controller: Erro blur email", error); }
-                finally { View.hideLoading(); }
-            },
-
-             handleGiftSelect(giftId, element) {
-                 console.log("Controller: Presente selecionado", giftId);
-                 this.selectedGiftId = giftId;
-                 View.selectGiftUI(element); // Apenas atualiza a UI
-             },
-
-             async handleConfirmManualGift() {
-                 View.hideError(View.elements.giftError);
-                 if (!Model.appConfig || !this.selectedGiftId || !Model.currentRsvpData || !Model.currentRsvpDocId || Model.currentRsvpData.attending !== 'yes') {
-                     View.showError(View.elements.giftError, "Confirme presença (Sim) e selecione um presente.");
-                     if (!Model.currentRsvpData || Model.currentRsvpData.attending !== 'yes') View.showSection('rsvp-section');
-                     return;
-                 }
-                 View.showLoading();
-                 try {
-                     const giftName = await Model.reserveGiftTransaction(this.selectedGiftId, Model.currentRsvpDocId, false);
-                     View.displayRsvpSuccess(Model.currentRsvpData.name);
-                     View.showSection('thankyou-section');
-                     this.selectedGiftId = null; View.clearGiftSelectionUI();
-                     // Opcional: Recarregar presentes para atualizar contagem visualmente, mas Model já atualizou cache
-                     // await Model.loadGifts();
-                     // View.renderGiftList(Model.giftDataCache, this.handleGiftSelect.bind(this));
-                 } catch (error) { console.error("Controller: Erro confirmar presente", error); View.displayGiftResult(error.message || "Erro ao reservar.", false); await Model.loadGifts(); View.renderGiftList(Model.giftDataCache, this.handleGiftSelect.bind(this)); } // Recarrega e re-renderiza em caso de erro
-                 finally { View.hideLoading(); }
-             },
-
-             async handleDrawGift() {
-                 View.clearGiftSelectionUI(); View.hideError(View.elements.giftError);
-                 if (!Model.appConfig || !Model.currentRsvpData || !Model.currentRsvpDocId || Model.currentRsvpData.attending !== 'yes') { View.showError(View.elements.giftError, "Confirme presença (Sim) primeiro."); View.showSection('rsvp-section'); return; }
-                 View.showLoading();
-                 try {
-                     const availableGifts = Model.giftDataCache.filter(g => (g.quantity - (g.reserved || 0)) > 0);
-                     if (availableGifts.length === 0) throw new Error("Ops! Todos os presentes já foram escolhidos.");
-                     const randomIndex = Math.floor(Math.random() * availableGifts.length); const drawnGift = availableGifts[randomIndex];
-                     this.selectedGiftId = null; // Garante que não é seleção manual
-                     const giftName = await Model.reserveGiftTransaction(drawnGift.id, Model.currentRsvpDocId, true);
-                     View.displayGiftResult(`Presente sorteado: ${giftName}! A registar...`, true);
-                     View.renderGiftList(Model.giftDataCache, this.handleGiftSelect.bind(this)); // Re-renderiza com contagem atualizada
-                     setTimeout(() => { View.displayRsvpSuccess(Model.currentRsvpData.name); View.showSection('thankyou-section'); }, 2000);
-                 } catch (error) { console.error("Controller: Erro sortear presente", error); View.displayGiftResult(error.message || "Erro ao sortear.", false); }
-                 finally { View.hideLoading(); }
-             },
-
-            // --- Handlers Admin ---
-            async handleAdminAuth() {
-                if (Model.currentUser && Model.isAdmin) { // Logout
-                    View.showLoading(); try { await Model.signOut(); } catch (e) { /*...*/ } finally { View.hideLoading(); }
-                } else { // Login
-                    View.showLoading(); try { await Model.signInWithGoogle(); } catch (e) { /*...*/ } finally { View.hideLoading(); }
-                }
-            },
-
-            async handleAdminSaveConfig(event) {
-                 event.preventDefault(); if (!Model.isAdmin) { /*...*/ return; }
-                 View.showLoading(); View.hideError(View.elements.adminGiftError); View.hideError(View.elements.adminGiftSuccess);
-                 try {
-                    const babyName = View.elements.adminBabyName.value.trim(); const eventDateStr = View.elements.adminEventDate.value; const eventTimeStr = View.elements.adminEventTime.value; const eventAddress = View.elements.adminEventAddress.value.trim(); const durationHours = parseInt(View.elements.adminDuration.value, 10); const selectedTheme = document.querySelector('input[name="theme"]:checked')?.value || 'pink';
-                    // Lê e processa Admin UIDs
-                     const adminUidsStr = View.elements.adminUidsInput.value.trim();
-                     const adminUids = adminUidsStr.split(',').map(uid => uid.trim()).filter(uid => uid.length > 0);
-
-                    if (!babyName || !eventDateStr || !eventTimeStr || !eventAddress || isNaN(durationHours) || durationHours < 1) throw new Error("Preencha campos.");
-                    const eventDateTime = new Date(`${eventDateStr}T${eventTimeStr}:00`); if (isNaN(eventDateTime.getTime())) throw new Error("Data/hora inválida.");
-                    const checkDate = eventDateTime.getDate() == eventDateStr.split('-')[2]; const checkMonth = (eventDateTime.getMonth() + 1) == eventDateStr.split('-')[1]; if (!checkDate || !checkMonth) throw new Error("Data inválida (dia/mês).");
-
-                    await Model.saveEventConfig({ babyName, eventDate: eventDateTime, eventAddress, durationHours, themeColor: selectedTheme, adminUids }); // Passa UIDs como array
-                    View.applyTheme(Model.appConfig.themeColor);
-                    View.setupUIWithConfig(Model.appConfig); // Atualiza UI geral
-                    View.showSuccess(View.elements.adminGiftSuccess, "Detalhes salvos!");
-                 } catch (error) { console.error("Controller: Erro save config", error); View.showError(View.elements.adminGiftError, `Erro: ${error.message}`); }
-                 finally { View.hideLoading(); }
-            },
-
-            async handleAdminAddGift(event) {
-                 event.preventDefault(); if (!Model.isAdmin) { /*...*/ return; }
-                 View.showLoading(); View.hideError(View.elements.adminGiftError); View.hideError(View.elements.adminGiftSuccess);
-                 try {
-                     const name = document.getElementById('new-gift-name').value.trim(); const description = document.getElementById('new-gift-desc').value.trim(); const quantity = parseInt(document.getElementById('new-gift-qty').value, 10); const img = document.getElementById('new-gift-img').value.trim();
-                     if (!name || isNaN(quantity) || quantity < 1) throw new Error("Nome e quantidade (>=1) obrigatórios.");
-                     await Model.addGift({ name, description, quantity, img }); // Adiciona no evento correto
-                     View.clearAddGiftForm(); View.showSuccess(View.elements.adminGiftSuccess, `Presente "${name}" adicionado!`);
-                     View.renderAdminGiftList(Model.giftDataCache, this.handleAdminDeleteGift.bind(this));
-                 } catch (error) { console.error("Controller: Erro add gift", error); View.showError(View.elements.adminGiftError, `Erro: ${error.message}`); }
-                 finally { View.hideLoading(); }
-            },
-
-            async handleAdminDeleteGift(giftId, reservedCount) {
-                 if (!Model.isAdmin) { /*...*/ return; }
-                 if (reservedCount > 0) { alert("Não pode excluir presentes já reservados."); return; }
-                 if (!confirm(`Excluir presente ID: ${giftId}?`)) return;
-                 View.showLoading(); View.hideError(View.elements.adminGiftError); View.hideError(View.elements.adminGiftSuccess);
-                 try {
-                     await Model.deleteGift(giftId); // Deleta do evento correto
-                     View.showSuccess(View.elements.adminGiftSuccess, `Presente ${giftId} excluído!`);
-                     View.renderAdminGiftList(Model.giftDataCache, this.handleAdminDeleteGift.bind(this));
-                 } catch (error) { console.error("Controller: Erro delete gift", error); View.showError(View.elements.adminGiftError, `Erro: ${error.message}`); }
-                 finally { View.hideLoading(); }
-            },
+            handleGiftSelect(giftId, element) { /* ... igual ... */ console.log("Controller: Presente selecionado", giftId); this.selectedGiftId = giftId; View.selectGiftUI(element); },
+            async handleConfirmManualGift() { /* ... igual ... */ View.hideError(View.elements.giftError); if (!Model.appConfig || !this.selectedGiftId || !Model.currentRsvpData || !Model.currentRsvpDocId || Model.currentRsvpData.attending !== 'yes') { View.showError(View.elements.giftError, "Confirme presença (Sim) e selecione."); if (!Model.currentRsvpData || Model.currentRsvpData.attending !== 'yes') View.showSection('rsvp-section'); return; } View.showLoading(); try { const giftName = await Model.reserveGiftTransaction(this.selectedGiftId, Model.currentRsvpDocId, false); View.displayRsvpSuccess(Model.currentRsvpData.name); View.showSection('thankyou-section'); this.selectedGiftId = null; View.clearGiftSelectionUI(); } catch (error) { console.error("Controller: Erro confirmar presente", error); View.displayGiftResult(error.message || "Erro ao reservar.", false); await Model.loadGifts(); View.renderGiftList(Model.giftDataCache, this.handleGiftSelect.bind(this)); } finally { View.hideLoading(); } },
+            async handleDrawGift() { /* ... igual ... */ View.clearGiftSelectionUI(); View.hideError(View.elements.giftError); if (!Model.appConfig || !Model.currentRsvpData || !Model.currentRsvpDocId || Model.currentRsvpData.attending !== 'yes') { View.showError(View.elements.giftError, "Confirme presença (Sim)."); View.showSection('rsvp-section'); return; } View.showLoading(); try { const availableGifts = Model.giftDataCache.filter(g => (g.quantity - (g.reserved || 0)) > 0); if (availableGifts.length === 0) throw new Error("Todos presentes escolhidos."); const randomIndex = Math.floor(Math.random() * availableGifts.length); const drawnGift = availableGifts[randomIndex]; this.selectedGiftId = null; const giftName = await Model.reserveGiftTransaction(drawnGift.id, Model.currentRsvpDocId, true); View.displayGiftResult(`Presente sorteado: ${giftName}! Registando...`, true); View.renderGiftList(Model.giftDataCache, this.handleGiftSelect.bind(this)); setTimeout(() => { View.displayRsvpSuccess(Model.currentRsvpData.name); View.showSection('thankyou-section'); }, 2000); } catch (error) { console.error("Controller: Erro sortear presente", error); View.displayGiftResult(error.message || "Erro ao sortear.", false); } finally { View.hideLoading(); } },
+            async handleAdminAuth() { /* ... igual ... */ if (Model.currentUser && Model.isAdmin) { View.showLoading(); try { await Model.signOut(); } catch (e) { console.error("Logout err", e); alert("Erro logout."); } finally { View.hideLoading(); } } else { View.showLoading(); try { await Model.signInWithGoogle(); } catch (e) { console.error("Login err", e); alert(`Erro login: ${e.message}`); } finally { View.hideLoading(); } } },
+            async handleAdminSaveConfig(event) { /* ... igual ... */ event.preventDefault(); if (!Model.isAdmin) { return; } View.showLoading(); View.hideError(View.elements.adminGiftError); View.hideError(View.elements.adminGiftSuccess); try { const babyName = View.elements.adminBabyName.value.trim(); const eventDateStr = View.elements.adminEventDate.value; const eventTimeStr = View.elements.adminEventTime.value; const eventAddress = View.elements.adminEventAddress.value.trim(); const durationHours = parseInt(View.elements.adminDuration.value, 10); const selectedTheme = document.querySelector('input[name="theme"]:checked')?.value || 'pink'; const adminUidsStr = View.elements.adminUidsInput.value.trim(); if (!babyName || !eventDateStr || !eventTimeStr || !eventAddress || isNaN(durationHours) || durationHours < 1) throw new Error("Preencha campos."); const eventDateTime = new Date(`${eventDateStr}T${eventTimeStr}:00`); if (isNaN(eventDateTime.getTime())) throw new Error("Data/hora inválida."); const checkDate = eventDateTime.getDate() == eventDateStr.split('-')[2]; const checkMonth = (eventDateTime.getMonth() + 1) == eventDateStr.split('-')[1]; if (!checkDate || !checkMonth) throw new Error("Data inválida (dia/mês)."); const adminUids = adminUidsStr.split(',').map(uid => uid.trim()).filter(uid => uid.length > 0); await Model.saveEventConfig({ babyName, eventDate: eventDateTime, eventAddress, durationHours, themeColor: selectedTheme, adminUids }); View.applyTheme(Model.appConfig.themeColor); this.setupUIWithConfig(); View.showSuccess(View.elements.adminGiftSuccess, "Detalhes salvos!"); } catch (error) { console.error("Controller: Erro save config", error); View.showError(View.elements.adminGiftError, `Erro: ${error.message}`); } finally { View.hideLoading(); } },
+            async handleAdminAddGift(event) { /* ... igual ... */ event.preventDefault(); if (!Model.isAdmin) { return; } View.showLoading(); View.hideError(View.elements.adminGiftError); View.hideError(View.elements.adminGiftSuccess); try { const name = document.getElementById('new-gift-name').value.trim(); const description = document.getElementById('new-gift-desc').value.trim(); const quantity = parseInt(document.getElementById('new-gift-qty').value, 10); const img = document.getElementById('new-gift-img').value.trim(); if (!name || isNaN(quantity) || quantity < 1) throw new Error("Nome e quantidade (>=1) obrigatórios."); await Model.addGift({ name, description, quantity, img }); View.clearAddGiftForm(); View.showSuccess(View.elements.adminGiftSuccess, `Presente "${name}" adicionado!`); View.renderAdminGiftList(Model.giftDataCache, this.handleAdminDeleteGift.bind(this)); } catch (error) { console.error("Controller: Erro add gift", error); View.showError(View.elements.adminGiftError, `Erro: ${error.message}`); } finally { View.hideLoading(); } },
+            async handleAdminDeleteGift(giftId, reservedCount) { /* ... igual ... */ if (!Model.isAdmin) { return; } if (reservedCount > 0) { alert("Não pode excluir presentes já reservados."); return; } if (!confirm(`Excluir presente ID: ${giftId}?`)) return; View.showLoading(); View.hideError(View.elements.adminGiftError); View.hideError(View.elements.adminGiftSuccess); try { await Model.deleteGift(giftId); View.showSuccess(View.elements.adminGiftSuccess, `Presente ${giftId} excluído!`); View.renderAdminGiftList(Model.giftDataCache, this.handleAdminDeleteGift.bind(this)); } catch (error) { console.error("Controller: Erro delete gift", error); View.showError(View.elements.adminGiftError, `Erro: ${error.message}`); } finally { View.hideLoading(); } },
 
             // --- Handlers UI Geral ---
             setupUIWithConfig() {
@@ -753,12 +401,16 @@
         // --- Inicialização ---
         document.addEventListener('DOMContentLoaded', () => {
             if (!firebaseConfig || !firebaseConfig.apiKey || firebaseConfig.apiKey === "SUA_API_KEY") {
-                alert("Configuração do Firebase incompleta!");
-                View.showEventLoadError("Configuração do Firebase incompleta no código HTML.");
+                alert("Configuração do Firebase incompleta! Edite o ficheiro HTML.");
+                // Tenta mostrar erro na UI se a View já estiver definida
+                if(typeof View !== 'undefined' && View.showEventLoadError) {
+                     View.showEventLoadError("Configuração do Firebase incompleta no código HTML.");
+                } else {
+                     document.body.innerHTML = '<p style="color:red; padding: 20px;">Erro crítico: Configuração do Firebase inválida no código.</p>';
+                }
                 return;
             }
-            // Inicia o Controller
-            Controller.init();
+            Controller.init(); // Inicia o Controller
         });
 
     </script>
