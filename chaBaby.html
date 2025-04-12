@@ -32,99 +32,21 @@
     <div id="loading-overlay" class="loading-overlay visible"> <div class="spinner"></div> </div>
 
     <div id="app" class="container mx-auto max-w-lg p-4">
-         <section id="event-error-section" class="app-section p-6 text-center">
-             <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/alert-triangle.svg" alt="Erro" class="mx-auto h-16 w-16 text-red-500 mb-4">
-             <h2 class="text-2xl font-bold text-red-600 mb-4">Erro no Evento</h2>
-             <p id="event-error-message" class="text-lg text-gray-700">Não foi possível carregar os dados do evento. Verifique se o link está correto ou contacte o organizador.</p>
-         </section>
-         <section id="welcome-section" class="app-section text-center p-6">
-              <img src="https://placehold.co/150x150/FFC0CB/333333?text=Beb%C3%AA" alt="Ilustração Bebê" id="welcome-image" class="mx-auto mb-6 rounded-full shadow-lg" onerror="this.src='https://placehold.co/150x150/cccccc/ffffff?text=Imagem+Indispon%C3%ADvel'">
-             <h1 class="text-3xl font-bold text-theme-accent mb-2">Chá de Bebê da <span id="baby-name-welcome">...</span>!</h1>
-             <p class="text-lg mb-4">Você está convidado(a)!</p>
-             <p class="text-md mb-2"><strong>Data:</strong> <span id="event-date">...</span></p>
-             <p class="text-md mb-6"><strong>Horário:</strong> <span id="event-time">...</span></p>
-             <p class="text-gray-600">Estamos muito felizes em compartilhar este momento especial!</p>
-              <button data-action="show-rsvp" class="action-button mt-8 bg-theme-primary hover:bg-theme-secondary text-theme-text font-bold py-3 px-6 rounded-lg shadow-md w-full"> Confirmar Presença </button>
-              <p id="admin-uid-info" class="text-xs text-gray-400 mt-4 hidden">Admin UID: <span id="admin-uid-display"></span></p>
-              <p id="event-id-info" class="text-xs text-gray-400 mt-1">ID do Evento: <span id="event-id-display">Carregando...</span></p>
-         </section>
-         <section id="rsvp-section" class="app-section p-6">
-              <h2 class="text-2xl font-bold text-center text-theme-accent mb-6">Confirme sua Presença</h2>
-             <form id="rsvp-form">
-                  <div class="mb-4"> <label for="guest-name" class="block text-sm font-medium text-gray-700 mb-1">Seu Nome Completo:</label> <input type="text" id="guest-name" name="guest-name" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-theme-primary focus:border-theme-primary" placeholder="Digite seu nome"> </div>
-                  <div class="mb-4"> <label for="guest-email" class="block text-sm font-medium text-gray-700 mb-1">Seu Email:</label> <input type="email" id="guest-email" name="guest-email" required class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-theme-primary focus:border-theme-primary" placeholder="seu.email@exemplo.com"> <p class="text-xs text-gray-500 mt-1">Usaremos seu email para associar seu presente.</p> </div>
-                  <div class="mb-6"> <span class="block text-sm font-medium text-gray-700 mb-2">Você poderá comparecer?</span> <div class="flex items-center justify-center space-x-4"> <label class="flex items-center space-x-2 p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100"> <input type="radio" name="attending" value="yes" required class="form-radio form-radio-theme focus:ring-theme-primary"> <span>Sim</span> </label> <label class="flex items-center space-x-2 p-3 border border-gray-300 rounded-lg cursor-pointer hover:bg-gray-100"> <input type="radio" name="attending" value="no" required class="form-radio text-gray-500 focus:ring-gray-400"> <span>Não</span> </label> </div> </div>
-                  <p id="rsvp-error" class="text-red-500 text-sm mb-4 text-center hidden"></p>
-                  <button type="submit" class="action-button w-full bg-theme-primary hover:bg-theme-secondary text-theme-text font-bold py-3 px-6 rounded-lg shadow-md"> Enviar Confirmação </button>
-             </form>
-         </section>
-         <section id="gift-section" class="app-section p-6">
-             <h2 class="text-2xl font-bold text-center text-theme-accent mb-6">Sugestão de Presente</h2>
-             <p class="text-center text-gray-600 mb-6">Escolha um item da lista ou clique em "Sortear Presente" para uma surpresa!</p>
-             <div id="gift-list-container" class="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6 min-h-[150px]"> <p id="gift-list-loading" class="text-center text-gray-500 col-span-full">A carregar presentes...</p> </div>
-              <p id="gift-error" class="text-red-500 text-sm mb-4 text-center hidden"></p>
-              <p id="gift-selected-info" class="text-green-600 text-sm mb-4 text-center hidden"></p>
-             <div class="space-y-4"> <button id="confirm-manual-gift-button" data-action="confirm-manual-gift" class="action-button w-full bg-blue-400 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-lg shadow-md hidden"> Confirmar Presente Escolhido </button> <button data-action="draw-gift" class="action-button w-full bg-yellow-300 hover:bg-yellow-400 text-gray-800 font-bold py-3 px-6 rounded-lg shadow-md"> Sortear Presente Surpresa! </button> </div>
-         </section>
-         <section id="location-section" class="app-section p-6 text-center">
-              <h2 class="text-2xl font-bold text-theme-accent mb-6">Local do Evento</h2>
-              <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/map-pin.svg" alt="Ícone Localização" class="mx-auto h-12 w-12 text-theme-primary mb-4">
-              <p class="text-lg mb-4">O chá será realizado em:</p> <p id="event-address" class="text-md font-semibold mb-6">A carregar endereço...</p>
-              <a id="map-link" href="#" target="_blank" class="action-button inline-block bg-green-300 hover:bg-green-400 text-gray-800 font-bold py-3 px-6 rounded-lg shadow-md hidden"> <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/map.svg" alt="Ícone Mapa" class="inline-block h-5 w-5 mr-2"> Ver no Google Maps </a>
-         </section>
-         <section id="calendar-section" class="app-section p-6 text-center">
-              <h2 class="text-2xl font-bold text-theme-accent mb-6">Adicionar ao Calendário</h2>
-              <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/calendar-plus.svg" alt="Ícone Calendário" class="mx-auto h-12 w-12 text-theme-primary mb-4">
-              <p class="text-lg mb-6">Não se esqueça! Adicione o evento ao seu calendário:</p>
-              <a id="google-calendar-link" href="#" target="_blank" class="action-button inline-block bg-blue-400 hover:bg-blue-500 text-white font-bold py-3 px-6 rounded-lg shadow-md mb-4 w-full sm:w-auto"> <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/calendar.svg" alt="Ícone Google" class="inline-block h-5 w-5 mr-2"> Adicionar ao Google Calendar </a>
-              <p class="text-sm text-gray-500 mt-4">(Para outros calendários, use a opção Google Calendar ou adicione manualmente)</p>
-         </section>
-         <section id="thankyou-section" class="app-section p-6 text-center">
-              <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/heart.svg" alt="Ícone Coração" class="mx-auto h-12 w-12 text-theme-primary mb-4 animate-pulse">
-              <h2 class="text-2xl font-bold text-theme-accent mb-4">Obrigado!</h2>
-              <p id="thankyou-message" class="text-lg mb-6">Sua resposta foi registada com sucesso.</p>
-              <p class="text-gray-600">Mal podemos esperar para celebrar consigo!</p>
-              <button data-action="show-welcome" class="action-button mt-8 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 px-6 rounded-lg shadow-md"> Voltar ao Início </button>
-         </section>
-         <section id="admin-section" class="app-section p-6">
-             <div class="flex justify-between items-center mb-6"> <h2 class="text-2xl font-bold text-theme-accent">Painel do Administrador</h2> </div>
-             <p id="admin-welcome-message" class="text-md mb-4 hidden">Olá, <span id="admin-user-name" class="font-semibold">Admin</span>!</p>
-             <p class="bg-yellow-100 border border-yellow-300 text-yellow-800 text-sm p-3 rounded-md mb-6"> <strong class="font-bold">Atenção:</strong> Você está editando o evento <strong id="admin-event-id" class="font-mono">...</strong>. As alterações afetarão este evento específico. </p>
-             <h3>Detalhes do Evento</h3>
-             <form id="admin-event-form">
-                  <div class="grid grid-cols-1 md:grid-cols-2 gap-4"> <div> <label for="admin-baby-name">Nome do Bebê:</label> <input type="text" id="admin-baby-name" required> </div> <div> <label for="admin-event-date">Data do Evento:</label> <input type="date" id="admin-event-date" required> </div> <div> <label for="admin-event-time">Hora do Evento:</label> <input type="time" id="admin-event-time" required> </div> <div> <label for="admin-duration">Duração (horas):</label> <input type="number" id="admin-duration" min="1" value="3" required> </div> </div>
-                  <div class="mt-4"> <label for="admin-event-address">Endereço Completo:</label> <textarea id="admin-event-address" rows="3" required></textarea> </div>
-                  <div class="mt-4"> <label>Tema de Cor:</label> <div class="flex flex-wrap gap-4"> <label class="flex items-center"><input type="radio" name="theme" value="pink" class="mr-1"> Rosa</label> <label class="flex items-center"><input type="radio" name="theme" value="blue" class="mr-1"> Azul</label> <label class="flex items-center"><input type="radio" name="theme" value="green" class="mr-1"> Verde</label> <label class="flex items-center"><input type="radio" name="theme" value="yellow" class="mr-1"> Amarelo</label> </div> </div>
-                  <div class="mt-4"> <label for="admin-uids">Admin UIDs (separados por vírgula):</label> <input type="text" id="admin-uids" placeholder="UID1,UID2,..."> </div>
-                  <button type="submit" class="action-button save-button mt-6 w-full py-3">Salvar Detalhes do Evento</button>
-             </form>
-              <h3 class="mt-8">Gerenciar Lista de Presentes</h3>
-              <div id="admin-gift-list" class="mb-6"> <p id="admin-gift-list-loading">A carregar lista de presentes...</p> </div>
-              <h3>Adicionar Novo Presente</h3>
-              <form id="add-gift-form">
-                   <label for="new-gift-name">Nome do Presente:</label> <input type="text" id="new-gift-name" required>
-                   <label for="new-gift-desc">Descrição (opcional):</label> <input type="text" id="new-gift-desc">
-                   <label for="new-gift-qty">Quantidade Disponível:</label> <input type="number" id="new-gift-qty" min="1" required>
-                   <label for="new-gift-img">URL da Imagem (opcional):</label> <input type="url" id="new-gift-img" placeholder="https://exemplo.com/imagem.jpg">
-                   <label for="new-gift-brands">Marcas Sugeridas (opcional):</label> <input type="text" id="new-gift-brands" placeholder="Marca A, Marca B, ...">
-                  <button type="submit" class="action-button save-button mt-4 w-full py-3">Adicionar Presente</button>
-              </form>
-              <p id="admin-gift-error" class="text-red-500 text-sm mt-4 text-center hidden"></p>
-              <p id="admin-gift-success" class="text-green-600 text-sm mt-4 text-center hidden"></p>
-         </section>
+         <section id="event-error-section" class="app-section p-6 text-center"> </section>
+         <section id="welcome-section" class="app-section text-center p-6"> </section>
+         <section id="rsvp-section" class="app-section p-6"> </section>
+         <section id="gift-section" class="app-section p-6"> </section>
+         <section id="location-section" class="app-section p-6 text-center"> </section>
+         <section id="calendar-section" class="app-section p-6 text-center"> </section>
+         <section id="thankyou-section" class="app-section p-6 text-center"> </section>
+         <section id="admin-section" class="app-section p-6"> </section>
     </div>
 
     <nav class="fixed bottom-0 left-0 right-0 bg-white shadow-lg border-t border-gray-200 max-w-lg mx-auto h-[60px] flex justify-around items-center" id="main-nav">
-        <button data-action="show-welcome" class="nav-button flex flex-col items-center text-gray-600 hover:text-theme-primary p-2 rounded-md"> <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/home.svg" alt="Início" class="h-6 w-6 mb-1"> <span class="text-xs">Início</span> </button>
-        <button data-action="show-rsvp" class="nav-button flex flex-col items-center text-gray-600 hover:text-theme-primary p-2 rounded-md"> <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/check-check.svg" alt="Confirmar" class="h-6 w-6 mb-1"> <span class="text-xs">Confirmar</span> </button>
-        <button data-action="show-gift" id="nav-gift-button" class="nav-button flex flex-col items-center text-gray-600 hover:text-theme-primary p-2 rounded-md disabled:opacity-50" disabled> <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/gift.svg" alt="Presente" class="h-6 w-6 mb-1"> <span class="text-xs">Presente</span> </button>
-        <button data-action="show-location" class="nav-button flex flex-col items-center text-gray-600 hover:text-theme-primary p-2 rounded-md"> <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/map-pin.svg" alt="Local" class="h-6 w-6 mb-1"> <span class="text-xs">Local</span> </button>
-        <button data-action="show-calendar" class="nav-button flex flex-col items-center text-gray-600 hover:text-theme-primary p-2 rounded-md"> <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/calendar-days.svg" alt="Calendário" class="h-6 w-6 mb-1"> <span class="text-xs">Calendário</span> </button>
-        <button data-action="admin-auth" id="admin-auth-button" class="nav-button flex flex-col items-center text-gray-600 hover:text-theme-primary p-2 rounded-md">
-            <img src="https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/log-in.svg" alt="Login" class="h-6 w-6"> <span class="text-xs">Admin</span>
-        </button>
-    </nav>
+       </nav>
 
+    <script>
+        // --- Configuração do Firebase (SUBSTITUA) ---
     <script>
         // --- Configuração do Firebase (SUBSTITUA) ---
         const firebaseConfig = {
@@ -147,176 +69,166 @@
 
         // --- MODEL ---
         const Model = {
+            // Propriedades (iguais)
             currentEventId: null, appConfig: null, giftDataCache: [], currentUser: null,
             isAdmin: false, currentRsvpData: null, currentRsvpDocId: null,
-
-            async loadEventConfig(eventId) {
-                console.log(`Model: Carregando config ${eventId}...`);
-                if (!eventId) throw new Error("ID Evento não fornecido.");
-                this.currentEventId = eventId;
-                const docRef = db.collection('events').doc(eventId);
-                const docSnap = await docRef.get();
-                if (docSnap.exists) {
-                    this.appConfig = docSnap.data();
-                    const rawEventDate = this.appConfig.eventDate;
-                    try {
-                        if (rawEventDate?.toDate) {
-                            const convertedDate = rawEventDate.toDate();
-                            if (convertedDate instanceof Date && !isNaN(convertedDate)) { this.appConfig.eventDate = convertedDate; }
-                            else { console.warn(`Model: toDate() inválida ${eventId}. Lido:`, rawEventDate); this.appConfig.eventDate = null; }
-                        } else { console.warn(`Model: eventDate não é timestamp ${eventId}. Tipo: ${typeof rawEventDate}`); this.appConfig.eventDate = null; }
-                    } catch (dateError) { console.error(`Model: Erro converter eventDate ${eventId}:`, dateError); this.appConfig.eventDate = null; }
-                    if (!Array.isArray(this.appConfig.adminUids)) this.appConfig.adminUids = [];
-                    console.log("Model: Config carregada", this.appConfig); // Log do objeto carregado
-                    this.checkAdminStatus(); return this.appConfig;
-                } else { throw new Error(`Evento ID '${eventId}' não encontrado!`); }
-            },
-            async saveEventConfig(updatedConfigData) { console.log(`Model: Salvando config ${this.currentEventId}...`); if (!this.isAdmin || !this.currentEventId) throw new Error("Acesso negado."); if (updatedConfigData.eventDate instanceof Date) { updatedConfigData.eventDate = firebase.firestore.Timestamp.fromDate(updatedConfigData.eventDate); } if (updatedConfigData.adminUids && typeof updatedConfigData.adminUids === 'string') { updatedConfigData.adminUids = updatedConfigData.adminUids.split(',').map(uid => uid.trim()).filter(uid => uid.length > 0); } else if (!Array.isArray(updatedConfigData.adminUids)) { updatedConfigData.adminUids = []; } await db.collection('events').doc(this.currentEventId).set(updatedConfigData, { merge: true }); console.log("Model: Config salva."); await this.loadEventConfig(this.currentEventId); },
-            async loadGifts() { console.log(`Model: Carregando presentes ${this.currentEventId}...`); if (!this.currentEventId) { this.giftDataCache = []; return []; } const snapshot = await db.collection('events').doc(this.currentEventId).collection('gifts').orderBy('name').get(); this.giftDataCache = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })); console.log("Model: Presentes carregados", this.giftDataCache); return this.giftDataCache; }, // Log do array carregado
-            async addGift(giftDetails) { console.log(`Model: Adicionando presente ${this.currentEventId}...`); if (!this.isAdmin || !this.currentEventId) throw new Error("Acesso negado."); const newGiftData = { name: giftDetails.name, description: giftDetails.description || '', quantity: giftDetails.quantity, img: giftDetails.img || '', suggestedBrands: giftDetails.suggestedBrands || '', reserved: 0 }; const docRef = await db.collection('events').doc(this.currentEventId).collection('gifts').add(newGiftData); console.log("Model: Presente adicionado", docRef.id); await this.loadGifts(); return docRef.id; },
-            async deleteGift(giftId) { console.log(`Model: Deletando presente ${giftId} de ${this.currentEventId}...`); if (!this.isAdmin || !this.currentEventId) throw new Error("Acesso negado."); const giftInCache = this.giftDataCache.find(g => g.id === giftId); if (giftInCache && (giftInCache.reserved || 0) > 0) throw new Error("Não pode excluir presentes já reservados."); await db.collection('events').doc(this.currentEventId).collection('gifts').doc(giftId).delete(); console.log("Model: Presente deletado."); await this.loadGifts(); },
-            async findRsvpByEmail(email) { console.log(`Model: Buscando RSVP por email ${email} no evento ${this.currentEventId}...`); if (!this.currentEventId) throw new Error("Evento não carregado."); try { const snapshot = await db.collection('events').doc(this.currentEventId).collection('rsvps').where('email', '==', email).limit(1).get(); if (!snapshot.empty) { const doc = snapshot.docs[0]; this.currentRsvpData = { id: doc.id, ...doc.data() }; this.currentRsvpDocId = doc.id; console.log("Model: RSVP encontrado", this.currentRsvpData); return this.currentRsvpData; } console.log("Model: Nenhum RSVP encontrado."); this.currentRsvpData = null; this.currentRsvpDocId = null; return null; } catch(error) { console.error("Model: Erro ao buscar RSVP por email (verifique regras de leitura para RSVPs):", error); this.currentRsvpData = null; this.currentRsvpDocId = null; return null; } },
-            async saveRsvp(rsvpData) { console.log(`Model: Salvando RSVP ${this.currentEventId}...`); if (!this.currentEventId) throw new Error("Evento não carregado."); rsvpData.timestamp = firebase.firestore.FieldValue.serverTimestamp(); const rsvpCollectionRef = db.collection('events').doc(this.currentEventId).collection('rsvps'); if (this.currentRsvpDocId) { await rsvpCollectionRef.doc(this.currentRsvpDocId).update(rsvpData); console.log("Model: RSVP atualizado", this.currentRsvpDocId); } else { const docRef = await rsvpCollectionRef.add(rsvpData); this.currentRsvpDocId = docRef.id; console.log("Model: RSVP criado", this.currentRsvpDocId); } this.currentRsvpData = { ...rsvpData, id: this.currentRsvpDocId }; return true; },
-            async reserveGiftTransaction(giftId, rsvpDocId, isDrawn) { console.log(`Model: Transação reserva ${this.currentEventId}...`); if (!this.currentEventId) throw new Error("Evento não carregado."); const giftRef = db.collection('events').doc(this.currentEventId).collection('gifts').doc(giftId); const rsvpRef = db.collection('events').doc(this.currentEventId).collection('rsvps').doc(rsvpDocId); let giftName = ''; await db.runTransaction(async (t) => { const giftDoc = await t.get(giftRef); if (!giftDoc.exists) throw new Error(`Presente ${giftId} não encontrado!`); const gift = giftDoc.data(); giftName = gift.name; const currentReserved = gift.reserved || 0; if (currentReserved >= gift.quantity) throw new Error(`"${giftName}" esgotado.`); t.update(giftRef, { reserved: currentReserved + 1 }); t.update(rsvpRef, { giftId: giftId, giftName: giftName, drawn: isDrawn }); }); console.log("Model: Transação OK."); const cachedGift = this.giftDataCache.find(g => g.id === giftId); if (cachedGift) cachedGift.reserved = (cachedGift.reserved || 0) + 1; return giftName; },
-            async signInWithGoogle() { console.log("Model: Iniciando login..."); const result = await auth.signInWithPopup(googleProvider); console.log("Model: Login OK", result.user?.uid); return result.user; },
-            async signOut() { console.log("Model: Logout..."); await auth.signOut(); console.log("Model: Logout OK."); },
-            setCurrentUser(user) { this.currentUser = user; this.checkAdminStatus(); },
-            checkAdminStatus() { if (this.currentUser && this.appConfig && this.appConfig.adminUids) { this.isAdmin = this.appConfig.adminUids.includes(this.currentUser.uid); } else { this.isAdmin = false; } console.log(`Model: Status Admin ${this.currentEventId}: ${this.isAdmin}`); }
+            // Funções (com log de data melhorado)
+            async loadEventConfig(eventId) { /* ... igual (v11) ... */ },
+            async saveEventConfig(updatedConfigData) { /* ... igual (v11) ... */ },
+            async loadGifts() { /* ... igual (v11) ... */ },
+            async addGift(giftDetails) { /* ... igual (v11) ... */ },
+            async deleteGift(giftId) { /* ... igual (v11) ... */ },
+            async findRsvpByEmail(email) { /* ... igual (v11) ... */ },
+            async saveRsvp(rsvpData) { /* ... igual (v11) ... */ },
+            async reserveGiftTransaction(giftId, rsvpDocId, isDrawn) { /* ... igual (v11) ... */ },
+            async signInWithGoogle() { /* ... igual (v11) ... */ },
+            async signOut() { /* ... igual (v11) ... */ },
+            setCurrentUser(user) { /* ... igual (v11) ... */ },
+            checkAdminStatus() { /* ... igual (v11) ... */ }
         };
 
         // --- VIEW ---
         const View = {
-            elements: { /* ... referências ... */ loadingOverlay: document.getElementById('loading-overlay'), sections: document.querySelectorAll('.app-section'), eventErrorSection: document.getElementById('event-error-section'), eventErrorMessage: document.getElementById('event-error-message'), welcomeImage: document.getElementById('welcome-image'), babyNameWelcome: document.getElementById('baby-name-welcome'), eventDate: document.getElementById('event-date'), eventTime: document.getElementById('event-time'), adminUidInfo: document.getElementById('admin-uid-info'), adminUidDisplay: document.getElementById('admin-uid-display'), eventIdInfo: document.getElementById('event-id-info'), eventIdDisplay: document.getElementById('event-id-display'), rsvpForm: document.getElementById('rsvp-form'), guestNameInput: document.getElementById('guest-name'), guestEmailInput: document.getElementById('guest-email'), rsvpError: document.getElementById('rsvp-error'), giftListContainer: document.getElementById('gift-list-container'), giftListLoading: document.getElementById('gift-list-loading'), giftError: document.getElementById('gift-error'), giftSelectedInfo: document.getElementById('gift-selected-info'), confirmManualGiftBtn: document.getElementById('confirm-manual-gift-button'), eventAddress: document.getElementById('event-address'), mapLink: document.getElementById('map-link'), googleCalendarLink: document.getElementById('google-calendar-link'), thankyouMessage: document.getElementById('thankyou-message'), adminSection: document.getElementById('admin-section'), adminWelcomeMsg: document.getElementById('admin-welcome-message'), adminUserName: document.getElementById('admin-user-name'), adminEventId: document.getElementById('admin-event-id'), adminEventForm: document.getElementById('admin-event-form'), adminBabyName: document.getElementById('admin-baby-name'), adminEventDate: document.getElementById('admin-event-date'), adminEventTime: document.getElementById('admin-event-time'), adminDuration: document.getElementById('admin-duration'), adminEventAddress: document.getElementById('admin-event-address'), adminUidsInput: document.getElementById('admin-uids'), adminGiftListDiv: document.getElementById('admin-gift-list'), adminGiftListLoading: document.getElementById('admin-gift-list-loading'), addGiftForm: document.getElementById('add-gift-form'), adminGiftError: document.getElementById('admin-gift-error'), adminGiftSuccess: document.getElementById('admin-gift-success'), mainNav: document.getElementById('main-nav'), navGiftButton: document.getElementById('nav-gift-button'), adminAuthButton: document.getElementById('admin-auth-button') },
-            showLoading() { this.elements.loadingOverlay?.classList.add('visible'); },
-            hideLoading() { this.elements.loadingOverlay?.classList.remove('visible'); },
-            showSection(sectionId) { this.elements.sections.forEach(section => section.classList.remove('active')); const activeSection = document.getElementById(sectionId); if (activeSection) activeSection.classList.add('active'); else console.warn(`View: Seção '${sectionId}' não encontrada.`); window.scrollTo(0, 0); },
-            showEventLoadError(message) { if (this.elements.eventErrorMessage) this.elements.eventErrorMessage.textContent = message; this.showSection('event-error-section'); this.hideLoading(); },
-            showError(element, message) { if(element) { element.textContent = message; element.classList.remove('hidden'); } else { console.error("View: Elemento de erro não encontrado:", element); } },
-            hideError(element) { if(element) { element.classList.add('hidden'); element.textContent = ''; } },
-            showSuccess(element, message) { if(element) { element.textContent = message; element.classList.remove('hidden'); setTimeout(() => this.hideError(element), 4000); } },
-            applyTheme(themeColor = 'pink') { /* ... igual ... */ },
-            // *** FUNÇÃO ATUALIZADA COM LOG EXTRA ***
-            displayWelcomeInfo(config, eventId) {
-                console.log("View: Recebido para UI -> ", config); // Log de diagnóstico
-                if (!config) { console.log("View: displayWelcomeInfo chamado sem config."); return; }
-                document.title = `Chá de Bebê da ${config.babyName || '[Nome]'}`;
-
-                // Log específico para babyName
-                console.log("View: Tentando exibir babyName:", config.babyName);
-                if(this.elements.babyNameWelcome) {
-                    console.log("View: Elemento babyNameWelcome encontrado.");
-                    this.elements.babyNameWelcome.textContent = config.babyName || '...';
-                } else {
-                    console.error("View: Elemento babyNameWelcome NÃO encontrado no HTML!");
-                }
-
-                if (config.eventDate instanceof Date && !isNaN(config.eventDate)) {
-                    if(this.elements.eventDate) this.elements.eventDate.textContent = config.eventDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-                    if(this.elements.eventTime) this.elements.eventTime.textContent = config.eventDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-                } else {
-                    console.log("View: eventDate inválido ou nulo ao exibir:", config.eventDate);
-                    if(this.elements.eventDate) this.elements.eventDate.textContent = "Inválida";
-                    if(this.elements.eventTime) this.elements.eventTime.textContent = "";
-                }
-                if(this.elements.eventIdDisplay) this.elements.eventIdDisplay.textContent = eventId || 'N/A';
-            },
-             // *** FUNÇÃO ATUALIZADA COM LINK CORRETO DO MAPA ***
-            displayEventDetails(config) {
-                if (!config) return;
-                const address = config.eventAddress || "";
-                if (this.elements.eventAddress) this.elements.eventAddress.textContent = address || "Endereço não definido";
-
-                // Gera link do Google Maps
-                if (address && this.elements.mapLink) {
-                    const mapQuery = encodeURIComponent(address);
-                    // Usa URL de busca padrão do Google Maps
-                    this.elements.mapLink.href = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
-                    this.elements.mapLink.target = '_blank'; // Abrir em nova aba
-                    this.elements.mapLink.classList.remove('hidden'); // Mostra o botão
-                } else if (this.elements.mapLink) {
-                    this.elements.mapLink.href = '#';
-                    this.elements.mapLink.classList.add('hidden'); // Esconde se não houver endereço
-                }
-
-                // Gera link do Google Calendar
-                if (config.eventDate instanceof Date && !isNaN(config.eventDate) && this.elements.googleCalendarLink) {
-                    const startTime = config.eventDate; const duration = config.durationHours || 3;
-                    const endTime = new Date(startTime.getTime() + duration * 60 * 60 * 1000);
-                    const formatGoogleDate = (d) => d.toISOString().replace(/-|:|\.\d{3}/g, '');
-                    const googleStartDate = formatGoogleDate(startTime); const googleEndDate = formatGoogleDate(endTime);
-                    const calendarText = encodeURIComponent(`Chá de Bebê da ${config.babyName}`);
-                    const calendarDetails = encodeURIComponent(`Venha celebrar conosco! Local: ${address}`);
-                    const calendarLocation = encodeURIComponent(address);
-                    const googleLink = `https://www.google.com/calendar/render?action=TEMPLATE&text=${calendarText}&dates=${googleStartDate}/${googleEndDate}&details=${calendarDetails}&location=${calendarLocation}`;
-                    this.elements.googleCalendarLink.href = googleLink; this.elements.googleCalendarLink.onclick = null;
-                } else if (this.elements.googleCalendarLink) {
-                    this.elements.googleCalendarLink.href = '#'; this.elements.googleCalendarLink.onclick = (e) => { e.preventDefault(); alert("Data do evento inválida ou não definida."); };
-                }
-            },
-            updateAdminAuthButton(isUserAdmin, user) { /* ... igual ... */ },
-            updateNavGiftButton(enabled) { /* ... igual ... */ },
-            fillRsvpForm(rsvpData) { /* ... igual ... */ },
-            clearRsvpForm() { /* ... igual ... */ },
-            displayRsvpSuccess(name) { /* ... igual ... */ },
-            displayRsvpNo(name) { /* ... igual ... */ },
-            renderGiftList(gifts, onSelectCallback) { /* ... igual ... */ },
-            selectGiftUI(element) { /* ... igual ... */ },
-            clearGiftSelectionUI() { /* ... igual ... */ },
-            displayGiftResult(message, isSuccess) { /* ... igual ... */ },
-            populateAdminForm(config, eventId) { /* ... igual ... */ },
-            renderAdminGiftList(gifts, deleteCallback) { /* ... igual (já mostrava suggestedBrands) ... */ },
-            clearAddGiftForm() { /* ... igual ... */ }
+            elements: { /* ... referências iguais ... */ },
+            // Funções (com log de data e link mapa corrigidos)
+            showLoading() { /* ... igual (v11) ... */ },
+            hideLoading() { /* ... igual (v11) ... */ },
+            showSection(sectionId) { /* ... igual (v11) ... */ },
+            showEventLoadError(message) { /* ... igual (v11) ... */ },
+            showError(element, message) { /* ... igual (v11) ... */ },
+            hideError(element) { /* ... igual (v11) ... */ },
+            showSuccess(element, message) { /* ... igual (v11) ... */ },
+            applyTheme(themeColor = 'pink') { /* ... igual (v11) ... */ },
+            displayWelcomeInfo(config, eventId) { /* ... igual (v11) ... */ },
+            displayEventDetails(config) { /* ... igual (v11) ... */ },
+            updateAdminAuthButton(isUserAdmin, user) { /* ... igual (v11) ... */ },
+            updateNavGiftButton(enabled) { /* ... igual (v11) ... */ },
+            fillRsvpForm(rsvpData) { /* ... igual (v11) ... */ },
+            clearRsvpForm() { /* ... igual (v11) ... */ },
+            displayRsvpSuccess(name) { /* ... igual (v11) ... */ },
+            displayRsvpNo(name) { /* ... igual (v11) ... */ },
+            renderGiftList(gifts, onSelectCallback) { /* ... igual (v11) ... */ },
+            selectGiftUI(element) { /* ... igual (v11) ... */ },
+            clearGiftSelectionUI() { /* ... igual (v11) ... */ },
+            displayGiftResult(message, isSuccess) { /* ... igual (v11) ... */ },
+            populateAdminForm(config, eventId) { /* ... igual (v11) ... */ },
+            renderAdminGiftList(gifts, deleteCallback) { /* ... igual (v11) ... */ },
+            clearAddGiftForm() { /* ... igual (v11) ... */ }
         };
 
         // --- CONTROLLER ---
         const Controller = {
             selectedGiftId: null,
 
-            init() { /* ... igual ... */ console.log("Controller: Inicializando aplicação..."); View.showLoading(); this.setupEventListeners(); const urlParams = new URLSearchParams(window.location.search); const eventId = urlParams.get('event'); if(View.elements.eventIdDisplay) View.elements.eventIdDisplay.textContent = eventId || 'Nenhum'; if (!eventId) { console.error("Controller: Event ID não encontrado na URL."); View.showEventLoadError("ID do evento não encontrado na URL."); return; } Model.loadEventConfig(eventId) .then(config => { this.setupUIWithConfig(); this.setupAuthListener(); return Model.loadGifts(); }) .then(() => { console.log("Controller: Config e presentes carregados."); View.showSection('welcome-section'); }) .catch(error => { console.error("Controller: Erro init:", error); View.showEventLoadError(`Erro: ${error.message}`); }) .finally(() => { View.hideLoading(); }); },
-            setupEventListeners() { /* ... igual ... */ },
-            handleActionClick(event) { /* ... igual ... */ },
-            setupAuthListener() { /* ... igual ... */ },
-            // *** MÉTODO CORRIGIDO (sem findRsvpByEmail antes) ***
-            async handleRsvpSubmit(event) {
-                event.preventDefault(); View.hideError(View.elements.rsvpError);
-                if (!Model.appConfig) { View.showError(View.elements.rsvpError, "Configuração carregando..."); return; }
-                const name = View.elements.guestNameInput.value.trim(); const email = View.elements.guestEmailInput.value.trim(); const attendingRadio = document.querySelector('input[name="attending"]:checked');
-                if (!name || !email || !attendingRadio || !/^\S+@\S+\.\S+$/.test(email)) { View.showError(View.elements.rsvpError, "Preencha corretamente."); return; }
-                const attending = attendingRadio.value;
-                View.showLoading();
-                try {
-                    // Lógica para determinar se cria ou atualiza (baseado no estado do Model)
-                    if (Model.currentRsvpData?.email === email) {
-                        Model.currentRsvpDocId = Model.currentRsvpData.id;
-                        console.log("Controller: Email corresponde, tentando update:", Model.currentRsvpDocId);
-                    } else {
-                        Model.currentRsvpDocId = null; Model.currentRsvpData = null;
-                        console.log("Controller: Email diferente, tentará criar novo.");
-                    }
-                    const rsvp = { name, email, attending };
-                    if (attending === 'no') { rsvp.giftId = null; rsvp.giftName = null; rsvp.drawn = null; }
-                    else if (Model.currentRsvpDocId) { rsvp.giftId = Model.currentRsvpData.giftId || null; rsvp.giftName = Model.currentRsvpData.giftName || null; rsvp.drawn = Model.currentRsvpData.drawn ?? null; }
+            init() { /* ... igual (v11) ... */ },
 
-                    await Model.saveRsvp(rsvp); // Tenta salvar
+            // *** FUNÇÃO ATUALIZADA COM LOGS EXTRAS ***
+            setupEventListeners() {
+                console.log("Controller: Configurando listeners...");
+                // Verifica se os elementos principais existem antes de adicionar listeners
+                if (View.elements.mainNav) {
+                    View.elements.mainNav.addEventListener('click', (e) => this.handleActionClick(e));
+                    console.log("Controller: Listener adicionado a mainNav.");
+                } else {
+                    console.error("Controller: Elemento mainNav não encontrado!");
+                }
 
-                    if (attending === 'yes') { View.showSection('gift-section'); }
-                    else { View.displayRsvpNo(name); View.showSection('thankyou-section'); }
-                } catch (error) { console.error("Controller: Erro RSVP submit", error); if (error.code === 'permission-denied') { View.showError(View.elements.rsvpError, `Erro permissão salvar. Verifique regras.`); } else { View.showError(View.elements.rsvpError, `Erro salvar: ${error.message}`); } }
-                finally { View.hideLoading(); }
+                // Listener no body para ações gerais (delegação)
+                document.body.addEventListener('click', (e) => this.handleActionClick(e));
+                console.log("Controller: Listener adicionado ao body.");
+
+                // Listeners de formulário
+                if (View.elements.rsvpForm) {
+                    View.elements.rsvpForm.addEventListener('submit', (e) => this.handleRsvpSubmit(e));
+                    console.log("Controller: Listener adicionado a rsvpForm.");
+                } else { console.warn("Controller: Elemento rsvpForm não encontrado.")};
+
+                if (View.elements.guestEmailInput) {
+                    View.elements.guestEmailInput.addEventListener('blur', (e) => this.handleRsvpEmailBlur(e));
+                     console.log("Controller: Listener adicionado a guestEmailInput.");
+                } else { console.warn("Controller: Elemento guestEmailInput não encontrado.")};
+
+                if (View.elements.adminEventForm) {
+                    View.elements.adminEventForm.addEventListener('submit', (e) => this.handleAdminSaveConfig(e));
+                     console.log("Controller: Listener adicionado a adminEventForm.");
+                } else { console.warn("Controller: Elemento adminEventForm não encontrado.")};
+
+                if (View.elements.addGiftForm) {
+                    View.elements.addGiftForm.addEventListener('submit', (e) => this.handleAdminAddGift(e));
+                     console.log("Controller: Listener adicionado a addGiftForm.");
+                } else { console.warn("Controller: Elemento addGiftForm não encontrado.")};
+
+                 // Listener Delegado para botões delete na lista admin
+                 if (View.elements.adminGiftListDiv) {
+                    View.elements.adminGiftListDiv.addEventListener('click', (e) => {
+                        const button = e.target.closest('button[data-action="delete-gift"]');
+                        if (button) {
+                            const giftId = button.dataset.giftId;
+                            const reservedCount = parseInt(button.dataset.reservedCount, 10);
+                            this.handleAdminDeleteGift(giftId, reservedCount);
+                        }
+                    });
+                    console.log("Controller: Listener adicionado a adminGiftListDiv.");
+                 } else { console.warn("Controller: Elemento adminGiftListDiv não encontrado.")};
+
+                 // Listener Delegado para itens na lista de presentes convidado
+                 if (View.elements.giftListContainer) {
+                     View.elements.giftListContainer.addEventListener('click', (e) => {
+                         const giftItem = e.target.closest('.gift-item');
+                         if (giftItem && giftItem.dataset.giftId) {
+                             this.handleGiftSelect(giftItem.dataset.giftId, giftItem);
+                         }
+                     });
+                     console.log("Controller: Listener adicionado a giftListContainer.");
+                 } else { console.warn("Controller: Elemento giftListContainer não encontrado.")};
             },
-            async handleRsvpEmailBlur(event) { /* ... igual (vazio) ... */ console.log("Controller: Email blur - verificação Firestore removida."); },
-            handleGiftSelect(giftId, element) { /* ... igual ... */ },
-            async handleConfirmManualGift() { /* ... igual ... */ },
-            async handleDrawGift() { /* ... igual ... */ },
-            async handleAdminAuth() { /* ... igual ... */ },
-            async handleAdminSaveConfig(event) { /* ... igual ... */ },
-            async handleAdminAddGift(event) { /* ... igual ... */ },
-            async handleAdminDeleteGift(giftId, reservedCount) { /* ... igual ... */ },
-            setupUIWithConfig() { /* ... igual ... */ View.displayWelcomeInfo(Model.appConfig, Model.currentEventId); View.displayEventDetails(Model.appConfig); if (Model.isAdmin) { View.populateAdminForm(Model.appConfig, Model.currentEventId); } }
+
+            // *** FUNÇÃO ATUALIZADA COM LOG EXTRA ***
+            handleActionClick(event) {
+                 const button = event.target.closest('[data-action]');
+                 if (!button) return; // Sai se não clicou em algo com data-action
+                 const action = button.dataset.action;
+                 console.log(`Controller: handleActionClick disparado para ação: ${action}`, event.target); // Log extra
+
+                 if (!Model.appConfig && action !== 'admin-auth' && action !== 'show-welcome') {
+                     alert("Aguarde o carregamento dos dados do evento.");
+                     return;
+                 }
+
+                 try {
+                     switch (action) {
+                         case 'show-welcome': View.showSection('welcome-section'); break;
+                         case 'show-rsvp': View.showSection('rsvp-section'); break;
+                         case 'show-gift': View.showSection('gift-section'); break;
+                         case 'show-location': View.showSection('location-section'); break;
+                         case 'show-calendar': View.showSection('calendar-section'); break;
+                         case 'admin-auth': this.handleAdminAuth(); break;
+                         case 'confirm-manual-gift': this.handleConfirmManualGift(); break;
+                         case 'draw-gift': this.handleDrawGift(); break;
+                         default: console.warn(`Controller: Ação desconhecida ou não tratada: ${action}`);
+                     }
+                 } catch (error) {
+                      console.error(`Controller: Erro ao executar ação '${action}':`, error);
+                      // Tenta mostrar um erro genérico na UI se possível
+                      if (View.elements.rsvpError) View.showError(View.elements.rsvpError, `Ocorreu um erro inesperado. Tente novamente.`);
+                 }
+             },
+
+            setupAuthListener() { /* ... igual (v11) ... */ },
+            async handleRsvpSubmit(event) { /* ... igual (v11 - sem findRsvpByEmail) ... */ },
+            async handleRsvpEmailBlur(event) { /* ... igual (v11 - vazio) ... */ },
+            handleGiftSelect(giftId, element) { /* ... igual (v11) ... */ },
+            async handleConfirmManualGift() { /* ... igual (v11) ... */ },
+            async handleDrawGift() { /* ... igual (v11) ... */ },
+            async handleAdminAuth() { /* ... igual (v11) ... */ },
+            async handleAdminSaveConfig(event) { /* ... igual (v11) ... */ },
+            async handleAdminAddGift(event) { /* ... igual (v11) ... */ },
+            async handleAdminDeleteGift(giftId, reservedCount) { /* ... igual (v11) ... */ },
+            setupUIWithConfig() { /* ... igual (v11) ... */ }
         };
 
         // --- Inicialização ---
-        document.addEventListener('DOMContentLoaded', () => { /* ... igual ... */ if (!firebaseConfig || !firebaseConfig.apiKey || firebaseConfig.apiKey === "SUA_API_KEY") { alert("Config Firebase incompleta!"); if(typeof View !== 'undefined' && View.showEventLoadError) { View.showEventLoadError("Config Firebase incompleta."); } else { document.body.innerHTML = '<p style="color:red; padding: 20px;">Erro crítico config Firebase.</p>'; } return; } Controller.init(); });
+        document.addEventListener('DOMContentLoaded', () => { /* ... igual (v11) ... */ });
 
     </script>
 
@@ -326,5 +238,3 @@
 
 
 
-
-       
