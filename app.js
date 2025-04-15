@@ -500,4 +500,4 @@ document.addEventListener('DOMContentLoaded', () => {
      Controller.init();
 });
 
-    </script>
+   
