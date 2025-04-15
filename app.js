@@ -12,7 +12,7 @@ try {
     }
     
     // Inicializa o Firebase com a configuração
-    firebase.initializeApp(firebaseConfig);
+    import { firebaseConfig } from './firebase-config.js';
     
     // Inicializa os serviços
     db = firebase.firestore();
