@@ -499,5 +499,3 @@ document.addEventListener('DOMContentLoaded', () => {
      if (!firebaseConfig || !firebaseConfig.apiKey || firebaseConfig.apiKey === "SUA_API_KEY") { alert("Config Firebase incompleta!"); if(typeof View !== 'undefined' && View.showEventLoadError) { View.showEventLoadError("Config Firebase incompleta."); } else { document.body.innerHTML = '<p style="color:red; padding: 20px;">Erro crítico config Firebase.</p>'; } return; }
      Controller.init();
 });
-
-   
