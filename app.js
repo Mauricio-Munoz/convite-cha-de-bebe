@@ -10,31 +10,24 @@ try {
     if (typeof firebaseConfig === 'undefined') {
         throw new Error("Variável firebaseConfig não encontrada. Verifique se firebase-config.js foi carregado corretamente ANTES de app.js.");
     }
-    
-    // Inicializa o Firebase com a configuração
-    import { firebaseConfig } from './firebase-config.js';
-    
-    // Inicializa os serviços
+    firebase.initializeApp(firebaseConfig); // Usa a variável carregada
     db = firebase.firestore();
     auth = firebase.auth();
     googleProvider = new firebase.auth.GoogleAuthProvider();
-    
-    console.log("Firebase inicializado com sucesso.");
+    console.log("Firebase inicializado com sucesso."); // Log de sucesso
 } catch (e) {
-    console.error("Erro Firebase Init:", e);
-    alert("Erro crítico na configuração da aplicação.");
-    
-    // Tenta mostrar erro na UI se a View já estiver definida
-    if(typeof View !== 'undefined' && View.showEventLoadError) {
-        View.showEventLoadError(`Erro Init Firebase: ${e.message}`);
-        View.hideLoading();
-    } else {
-        // Fallback se a View não estiver pronta
-        document.body.innerHTML = `<p style="color:red; padding: 20px;">Erro crítico ao inicializar Firebase: ${e.message}</p>`;
-    }
-    
-    // Impede a execução do resto do script se a inicialização falhar
-    throw new Error("Falha na inicialização do Firebase.");
+     console.error("Erro Firebase Init:", e);
+     alert("Erro crítico na configuração da aplicação.");
+     // Tenta mostrar erro na UI se a View já estiver definida (pode não estar ainda)
+     if(typeof View !== 'undefined' && View.showEventLoadError) {
+          View.showEventLoadError(`Erro Init Firebase: ${e.message}`);
+          View.hideLoading();
+     } else {
+          // Fallback se a View não estiver pronta
+          document.body.innerHTML = `<p style="color:red; padding: 20px;">Erro crítico ao inicializar Firebase: ${e.message}</p>`;
+     }
+     // Impede a execução do resto do script se a inicialização falhar
+     throw new Error("Falha na inicialização do Firebase.");
 }
 
 // --- MODEL ---
