@@ -10,31 +10,24 @@ try {
     if (typeof firebaseConfig === 'undefined') {
         throw new Error("Variável firebaseConfig não encontrada. Verifique se firebase-config.js foi carregado corretamente ANTES de app.js.");
     }
-    
-    // Inicializa o Firebase com a configuração
-    firebase.initializeApp(firebaseConfig);
-    
-    // Inicializa os serviços Firebase
+    firebase.initializeApp(firebaseConfig); // Usa a variável carregada
     db = firebase.firestore();
     auth = firebase.auth();
     googleProvider = new firebase.auth.GoogleAuthProvider();
-    
     console.log("Firebase inicializado com sucesso."); // Log de sucesso
 } catch (e) {
-    console.error("Erro Firebase Init:", e);
-    alert("Erro crítico na configuração da aplicação.");
-    
-    // Tenta mostrar erro na UI se a View já estiver definida (pode não estar ainda)
-    if(typeof View !== 'undefined' && View.showEventLoadError) {
-        View.showEventLoadError(`Erro Init Firebase: ${e.message}`);
-        View.hideLoading();
-    } else {
-        // Fallback se a View não estiver pronta
-        document.body.innerHTML = `<p style="color:red; padding: 20px;">Erro crítico ao inicializar Firebase: ${e.message}</p>`;
-    }
-    
-    // Impede a execução do resto do script se a inicialização falhar
-    throw new Error("Falha na inicialização do Firebase.");
+     console.error("Erro Firebase Init:", e);
+     alert("Erro crítico na configuração da aplicação.");
+     // Tenta mostrar erro na UI se a View já estiver definida (pode não estar ainda)
+     if(typeof View !== 'undefined' && View.showEventLoadError) {
+          View.showEventLoadError(`Erro Init Firebase: ${e.message}`);
+          View.hideLoading();
+     } else {
+          // Fallback se a View não estiver pronta
+          document.body.innerHTML = `<p style="color:red; padding: 20px;">Erro crítico ao inicializar Firebase: ${e.message}</p>`;
+     }
+     // Impede a execução do resto do script se a inicialização falhar
+     throw new Error("Falha na inicialização do Firebase.");
 }
 
 // --- MODEL ---
@@ -506,3 +499,8 @@ document.addEventListener('DOMContentLoaded', () => {
      if (!firebaseConfig || !firebaseConfig.apiKey || firebaseConfig.apiKey === "SUA_API_KEY") { alert("Config Firebase incompleta!"); if(typeof View !== 'undefined' && View.showEventLoadError) { View.showEventLoadError("Config Firebase incompleta."); } else { document.body.innerHTML = '<p style="color:red; padding: 20px;">Erro crítico config Firebase.</p>'; } return; }
      Controller.init();
 });
+
+    </script>
+
+</body>
+</html>
