@@ -1,5 +1,6 @@
 // firebase-config.js
-const firebaseConfig = {
+//const firebaseConfig = {
+window.firebaseConfig = {
       apiKey: "AIzaSyB6NMSbRKIOyarr2c6oOG7CsXJzuuGQrHw", 
       authDomain: "chababy001-32f3a.firebaseapp.com", 
       projectId: "chababy001-32f3a",
