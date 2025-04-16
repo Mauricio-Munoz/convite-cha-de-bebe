@@ -1,6 +1,6 @@
 // Arquivo: app.js
 // Contém a lógica Model-View-Controller da aplicação Chá de Bebê.
-// Assume que firebase-config.js já foi carregado e definiu a variável firebaseConfig.
+// Assume que firebase-config.js já foi carregado e definiu a variável firebaseConfig globalmente.
 // Assume que os SDKs do Firebase já foram carregados no index.html.
 
 // --- Inicializar Firebase ---
@@ -8,9 +8,9 @@ let db, auth, googleProvider;
 try {
     // Verifica se firebaseConfig foi carregado do arquivo externo
     if (typeof firebaseConfig === 'undefined') {
-        throw new Error("Variável firebaseConfig não encontrada. Verifique se firebase-config.js foi carregado corretamente ANTES de app.js.");
+        throw new Error("Variável firebaseConfig não encontrada. Verifique se firebase-config.js foi carregado corretamente ANTES de app.js no HTML.");
     }
-    firebase.initializeApp(firebaseConfig); // Usa a variável carregada
+    firebase.initializeApp(firebaseConfig); // Usa a variável global carregada
     db = firebase.firestore();
     auth = firebase.auth();
     googleProvider = new firebase.auth.GoogleAuthProvider();
@@ -246,7 +246,6 @@ const View = {
         sections: document.querySelectorAll('.app-section'),
         eventErrorSection: document.getElementById('event-error-section'),
         eventErrorMessage: document.getElementById('event-error-message'),
-        // Welcome
         welcomeImage: document.getElementById('welcome-image'),
         babyNameWelcome: document.getElementById('baby-name-welcome'),
         eventDate: document.getElementById('event-date'),
@@ -255,25 +254,19 @@ const View = {
         adminUidDisplay: document.getElementById('admin-uid-display'),
         eventIdInfo: document.getElementById('event-id-info'),
         eventIdDisplay: document.getElementById('event-id-display'),
-        // RSVP
         rsvpForm: document.getElementById('rsvp-form'),
         guestNameInput: document.getElementById('guest-name'),
         guestEmailInput: document.getElementById('guest-email'),
         rsvpError: document.getElementById('rsvp-error'),
-        // Gifts (Guest)
         giftListContainer: document.getElementById('gift-list-container'),
         giftListLoading: document.getElementById('gift-list-loading'),
         giftError: document.getElementById('gift-error'),
         giftSelectedInfo: document.getElementById('gift-selected-info'),
         confirmManualGiftBtn: document.getElementById('confirm-manual-gift-button'),
-        // Location
         eventAddress: document.getElementById('event-address'),
         mapLink: document.getElementById('map-link'),
-        // Calendar
         googleCalendarLink: document.getElementById('google-calendar-link'),
-        // Thank You
         thankyouMessage: document.getElementById('thankyou-message'),
-        // Admin
         adminSection: document.getElementById('admin-section'),
         adminWelcomeMsg: document.getElementById('admin-welcome-message'),
         adminUserName: document.getElementById('admin-user-name'),
@@ -290,7 +283,6 @@ const View = {
         addGiftForm: document.getElementById('add-gift-form'),
         adminGiftError: document.getElementById('admin-gift-error'),
         adminGiftSuccess: document.getElementById('admin-gift-success'),
-        // Nav
         mainNav: document.getElementById('main-nav'),
         navGiftButton: document.getElementById('nav-gift-button'),
         adminAuthButton: document.getElementById('admin-auth-button')
@@ -299,96 +291,15 @@ const View = {
     // --- Métodos de Atualização da UI ---
     showLoading() { this.elements.loadingOverlay?.classList.add('visible'); },
     hideLoading() { this.elements.loadingOverlay?.classList.remove('visible'); },
-
-    showSection(sectionId) {
-        this.elements.sections.forEach(section => section.classList.remove('active'));
-        const activeSection = document.getElementById(sectionId);
-        if (activeSection) activeSection.classList.add('active');
-        else console.warn(`View: Seção com ID '${sectionId}' não encontrada.`);
-        window.scrollTo(0, 0);
-    },
-     showEventLoadError(message) {
-         if (this.elements.eventErrorMessage) this.elements.eventErrorMessage.textContent = message;
-         this.showSection('event-error-section');
-         this.hideLoading();
-     },
+    showSection(sectionId) { this.elements.sections.forEach(section => section.classList.remove('active')); const activeSection = document.getElementById(sectionId); if (activeSection) activeSection.classList.add('active'); else console.warn(`View: Seção '${sectionId}' não encontrada.`); window.scrollTo(0, 0); },
+    showEventLoadError(message) { if (this.elements.eventErrorMessage) this.elements.eventErrorMessage.textContent = message; this.showSection('event-error-section'); this.hideLoading(); },
     showError(element, message) { if(element) { element.textContent = message; element.classList.remove('hidden'); } else { console.error("View: Elemento de erro não encontrado:", element); } },
     hideError(element) { if(element) { element.classList.add('hidden'); element.textContent = ''; } },
     showSuccess(element, message) { if(element) { element.textContent = message; element.classList.remove('hidden'); setTimeout(() => this.hideError(element), 4000); } },
-
-    applyTheme(themeColor = 'pink') {
-        console.log("View: Aplicando tema:", themeColor);
-        const root = document.documentElement;
-        let p, s, a, t = '#333';
-        switch (themeColor) { case 'blue': p = '#ADD8E6'; s = '#B0E0E6'; a = '#87CEFA'; t = '#00008B'; break; case 'green': p = '#98FB98'; s = '#90EE90'; a = '#3CB371'; t = '#006400'; break; case 'yellow': p = '#FFFFE0'; s = '#FFFACD'; a = '#FFD700'; t = '#8B4513'; break; case 'pink': default: p = '#FFC0CB'; s = '#FFB6C1'; a = '#FF69B4'; t = '#333'; break; }
-        root.style.setProperty('--primary-color', p); root.style.setProperty('--secondary-color', s); root.style.setProperty('--accent-color', a); root.style.setProperty('--text-color', t);
-        const spin = document.querySelector('.spinner'); if (spin) spin.style.borderLeftColor = p;
-        const img = this.elements.welcomeImage; if (img && img.src.includes('placehold.co')) { try { const parts = img.src.split('/'); const size = parts[3]; const ct = parts[4].split('?'); const txt = ct[1] || ''; const bg = p.substring(1); const tcH = t.substring(1); const tc = tcH.length === 6 ? tcH : '333'; img.src = `https://placehold.co/${size}/${bg}/${tc}?${txt}`; } catch (e) { console.warn("View: Falha placeholder img."); } }
-    },
-
-    displayWelcomeInfo(config, eventId) {
-        console.log("View: Recebido para UI -> ", config); // Log de diagnóstico
-        if (!config) { console.log("View: displayWelcomeInfo chamado sem config."); return; }
-        document.title = `Chá de Bebê da ${config.babyName || '[Nome]'}`;
-        // Log específico para babyName
-        console.log("View: Tentando exibir babyName:", config.babyName);
-        if(this.elements.babyNameWelcome) {
-            console.log("View: Elemento babyNameWelcome encontrado.");
-            this.elements.babyNameWelcome.textContent = config.babyName || '...';
-        } else {
-            console.error("View: Elemento babyNameWelcome NÃO encontrado no HTML!");
-        }
-
-        if (config.eventDate instanceof Date && !isNaN(config.eventDate)) {
-            if(this.elements.eventDate) this.elements.eventDate.textContent = config.eventDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' });
-            if(this.elements.eventTime) this.elements.eventTime.textContent = config.eventDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-        } else {
-            console.log("View: eventDate inválido ou nulo ao exibir:", config.eventDate);
-            if(this.elements.eventDate) this.elements.eventDate.textContent = "Inválida";
-            if(this.elements.eventTime) this.elements.eventTime.textContent = "";
-        }
-        if(this.elements.eventIdDisplay) this.elements.eventIdDisplay.textContent = eventId || 'N/A';
-    },
-
-    displayEventDetails(config) {
-        if (!config) return;
-        const address = config.eventAddress || "";
-        if (this.elements.eventAddress) this.elements.eventAddress.textContent = address || "Endereço não definido";
-
-        // Gera link do Google Maps
-        if (address && this.elements.mapLink) {
-            const mapQuery = encodeURIComponent(address);
-            // Usa URL de busca padrão do Google Maps
-            this.elements.mapLink.href = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`;
-            this.elements.mapLink.target = '_blank'; // Abrir em nova aba
-            this.elements.mapLink.classList.remove('hidden'); // Mostra o botão
-        } else if (this.elements.mapLink) {
-            this.elements.mapLink.href = '#';
-            this.elements.mapLink.classList.add('hidden'); // Esconde se não houver endereço
-        }
-
-        // Gera link do Google Calendar
-        if (config.eventDate instanceof Date && !isNaN(config.eventDate) && this.elements.googleCalendarLink) {
-            const startTime = config.eventDate; const duration = config.durationHours || 3;
-            const endTime = new Date(startTime.getTime() + duration * 60 * 60 * 1000);
-            const formatGoogleDate = (d) => d.toISOString().replace(/-|:|\.\d{3}/g, '');
-            const googleStartDate = formatGoogleDate(startTime); const googleEndDate = formatGoogleDate(endTime);
-            const calendarText = encodeURIComponent(`Chá de Bebê da ${config.babyName}`);
-            const calendarDetails = encodeURIComponent(`Venha celebrar conosco! Local: ${address}`);
-            const calendarLocation = encodeURIComponent(address);
-            const googleLink = `https://www.google.com/calendar/render?action=TEMPLATE&text=${calendarText}&dates=${googleStartDate}/${googleEndDate}&details=${calendarDetails}&location=${calendarLocation}`;
-            this.elements.googleCalendarLink.href = googleLink; this.elements.googleCalendarLink.onclick = null;
-        } else if (this.elements.googleCalendarLink) {
-            this.elements.googleCalendarLink.href = '#'; this.elements.googleCalendarLink.onclick = (e) => { e.preventDefault(); alert("Data do evento inválida ou não definida."); };
-        }
-    },
-
-    updateAdminAuthButton(isUserAdmin, user) {
-         const icon = this.elements.adminAuthButton.querySelector('img');
-         const text = this.elements.adminAuthButton.querySelector('span');
-         if (isUserAdmin) { icon.src = 'https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/log-out.svg'; icon.alt = 'Sair Admin'; text.textContent = 'Sair'; this.elements.adminAuthButton.classList.remove('text-gray-600', 'hover:text-theme-primary'); this.elements.adminAuthButton.classList.add('text-red-500', 'hover:text-red-700'); this.elements.adminUidDisplay.textContent = user?.uid || 'N/A'; this.elements.adminUidInfo.classList.remove('hidden'); this.elements.adminUserName.textContent = user?.displayName || user?.email || 'Admin'; this.elements.adminWelcomeMsg.classList.remove('hidden'); }
-         else { icon.src = 'https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/log-in.svg'; icon.alt = 'Login Admin'; text.textContent = 'Admin'; this.elements.adminAuthButton.classList.add('text-gray-600', 'hover:text-theme-primary'); this.elements.adminAuthButton.classList.remove('text-red-500', 'hover:text-red-700'); this.elements.adminUidInfo.classList.add('hidden'); this.elements.adminWelcomeMsg.classList.add('hidden'); }
-    },
+    applyTheme(themeColor = 'pink') { console.log("View: Aplicando tema:", themeColor); const root = document.documentElement; let p, s, a, t = '#333'; switch (themeColor) { case 'blue': p = '#ADD8E6'; s = '#B0E0E6'; a = '#87CEFA'; t = '#00008B'; break; case 'green': p = '#98FB98'; s = '#90EE90'; a = '#3CB371'; t = '#006400'; break; case 'yellow': p = '#FFFFE0'; s = '#FFFACD'; a = '#FFD700'; t = '#8B4513'; break; case 'pink': default: p = '#FFC0CB'; s = '#FFB6C1'; a = '#FF69B4'; t = '#333'; break; } root.style.setProperty('--primary-color', p); root.style.setProperty('--secondary-color', s); root.style.setProperty('--accent-color', a); root.style.setProperty('--text-color', t); const spin = document.querySelector('.spinner'); if (spin) spin.style.borderLeftColor = p; const img = this.elements.welcomeImage; if (img && img.src.includes('placehold.co')) { try { const parts = img.src.split('/'); const size = parts[3]; const ct = parts[4].split('?'); const txt = ct[1] || ''; const bg = p.substring(1); const tcH = t.substring(1); const tc = tcH.length === 6 ? tcH : '333'; img.src = `https://placehold.co/${size}/${bg}/${tc}?${txt}`; } catch (e) { console.warn("View: Falha placeholder img."); } } },
+    displayWelcomeInfo(config, eventId) { console.log("View: Recebido para UI -> ", config); if (!config) { console.log("View: displayWelcomeInfo chamado sem config."); return; } document.title = `Chá de Bebê da ${config.babyName || '[Nome]'}`; console.log("View: Tentando exibir babyName:", config.babyName); if(this.elements.babyNameWelcome) { console.log("View: Elemento babyNameWelcome encontrado."); this.elements.babyNameWelcome.textContent = config.babyName || '...'; } else { console.error("View: Elemento babyNameWelcome NÃO encontrado no HTML!"); } if (config.eventDate instanceof Date && !isNaN(config.eventDate)) { if(this.elements.eventDate) this.elements.eventDate.textContent = config.eventDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }); if(this.elements.eventTime) this.elements.eventTime.textContent = config.eventDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); } else { console.log("View: eventDate inválido ou nulo ao exibir:", config.eventDate); if(this.elements.eventDate) this.elements.eventDate.textContent = "Inválida"; if(this.elements.eventTime) this.elements.eventTime.textContent = ""; } if(this.elements.eventIdDisplay) this.elements.eventIdDisplay.textContent = eventId || 'N/A'; },
+    displayEventDetails(config) { if (!config) return; const address = config.eventAddress || ""; if (this.elements.eventAddress) this.elements.eventAddress.textContent = address || "Endereço não definido"; if (address && this.elements.mapLink) { const mapQuery = encodeURIComponent(address); this.elements.mapLink.href = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`; this.elements.mapLink.target = '_blank'; this.elements.mapLink.classList.remove('hidden'); } else if (this.elements.mapLink) { this.elements.mapLink.href = '#'; this.elements.mapLink.classList.add('hidden'); } if (config.eventDate instanceof Date && !isNaN(config.eventDate) && this.elements.googleCalendarLink) { const startTime = config.eventDate; const duration = config.durationHours || 3; const endTime = new Date(startTime.getTime() + duration * 60 * 60 * 1000); const formatGoogleDate = (d) => d.toISOString().replace(/-|:|\.\d{3}/g, ''); const googleStartDate = formatGoogleDate(startTime); const googleEndDate = formatGoogleDate(endTime); const calendarText = encodeURIComponent(`Chá de Bebê da ${config.babyName}`); const calendarDetails = encodeURIComponent(`Venha celebrar conosco! Local: ${address}`); const calendarLocation = encodeURIComponent(address); const googleLink = `https://www.google.com/calendar/render?action=TEMPLATE&text=${calendarText}&dates=${googleStartDate}/${googleEndDate}&details=${calendarDetails}&location=${calendarLocation}`; this.elements.googleCalendarLink.href = googleLink; this.elements.googleCalendarLink.onclick = null; } else if (this.elements.googleCalendarLink) { this.elements.googleCalendarLink.href = '#'; this.elements.googleCalendarLink.onclick = (e) => { e.preventDefault(); alert("Data do evento inválida ou não definida."); }; } },
+    updateAdminAuthButton(isUserAdmin, user) { const icon = this.elements.adminAuthButton.querySelector('img'); const text = this.elements.adminAuthButton.querySelector('span'); if (isUserAdmin) { icon.src = 'https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/log-out.svg'; icon.alt = 'Sair Admin'; text.textContent = 'Sair'; this.elements.adminAuthButton.classList.remove('text-gray-600', 'hover:text-theme-primary'); this.elements.adminAuthButton.classList.add('text-red-500', 'hover:text-red-700'); this.elements.adminUidDisplay.textContent = user?.uid || 'N/A'; this.elements.adminUidInfo.classList.remove('hidden'); this.elements.adminUserName.textContent = user?.displayName || user?.email || 'Admin'; this.elements.adminWelcomeMsg.classList.remove('hidden'); } else { icon.src = 'https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/log-in.svg'; icon.alt = 'Login Admin'; text.textContent = 'Admin'; this.elements.adminAuthButton.classList.add('text-gray-600', 'hover:text-theme-primary'); this.elements.adminAuthButton.classList.remove('text-red-500', 'hover:text-red-700'); this.elements.adminUidInfo.classList.add('hidden'); this.elements.adminWelcomeMsg.classList.add('hidden'); } },
     updateNavGiftButton(enabled) { if (this.elements.navGiftButton) this.elements.navGiftButton.disabled = !enabled; },
     fillRsvpForm(rsvpData) { if (this.elements.guestNameInput) this.elements.guestNameInput.value = rsvpData.name; const radio = document.querySelector(`input[name="attending"][value="${rsvpData.attending}"]`); if (radio) radio.checked = true; },
     clearRsvpForm() { if (this.elements.rsvpForm) this.elements.rsvpForm.reset(); },
@@ -423,13 +334,13 @@ const Controller = {
 
         Model.loadEventConfig(eventId)
             .then(config => {
-                this.setupUIWithConfig(); // Chama a atualização da UI aqui
-                this.setupAuthListener();
-                return Model.loadGifts(); // Carrega presentes depois
+                this.setupUIWithConfig(); // Atualiza UI com config básica
+                this.setupAuthListener(); // Configura listener de auth
+                return Model.loadGifts(); // Carrega presentes
             })
             .then(() => {
                 console.log("Controller: Configuração e presentes carregados.");
-                View.showSection('welcome-section'); // Mostra welcome após carregar
+                View.showSection('welcome-section'); // Define a seção inicial
             })
             .catch(error => {
                 console.error("Controller: Erro na inicialização:", error);
@@ -455,7 +366,11 @@ const Controller = {
          if (!button) return;
          const action = button.dataset.action;
          console.log(`Controller: handleActionClick disparado para ação: ${action}`, event.target);
-         if (!Model.appConfig && action !== 'admin-auth' && action !== 'show-welcome') { alert("Aguarde o carregamento."); return; }
+         // Permite login mesmo sem config carregada
+         if (!Model.appConfig && action !== 'admin-auth' && action !== 'show-welcome') {
+             alert("Aguarde o carregamento dos dados do evento.");
+             return;
+         }
          try { switch (action) { case 'show-welcome': View.showSection('welcome-section'); break; case 'show-rsvp': View.showSection('rsvp-section'); break; case 'show-gift': View.showSection('gift-section'); break; case 'show-location': View.showSection('location-section'); break; case 'show-calendar': View.showSection('calendar-section'); break; case 'admin-auth': this.handleAdminAuth(); break; case 'confirm-manual-gift': this.handleConfirmManualGift(); break; case 'draw-gift': this.handleDrawGift(); break; default: console.warn(`Controller: Ação desconhecida: ${action}`); } }
          catch (error) { console.error(`Controller: Erro ação '${action}':`, error); if (View.elements.rsvpError) View.showError(View.elements.rsvpError, `Erro inesperado.`); }
      },
@@ -494,13 +409,19 @@ const Controller = {
 };
 
 // --- Inicialização ---
+// Adiciona um listener que espera o DOM estar pronto antes de iniciar o Controller
 document.addEventListener('DOMContentLoaded', () => {
-     console.log(">>> TESTE: SCRIPT PRINCIPAL INICIOU <<<"); // Mantém log inicial
-     if (!firebaseConfig || !firebaseConfig.apiKey || firebaseConfig.apiKey === "SUA_API_KEY") { alert("Config Firebase incompleta!"); if(typeof View !== 'undefined' && View.showEventLoadError) { View.showEventLoadError("Config Firebase incompleta."); } else { document.body.innerHTML = '<p style="color:red; padding: 20px;">Erro crítico config Firebase.</p>'; } return; }
+     console.log(">>> TESTE: DOMContentLoaded disparado. <<<");
+     // Verifica config do Firebase antes de inicializar
+     if (typeof firebaseConfig === 'undefined' || !firebaseConfig || !firebaseConfig.apiKey || firebaseConfig.apiKey === "SUA_API_KEY") {
+         alert("Configuração do Firebase incompleta ou inválida no arquivo firebase-config.js!");
+         if(typeof View !== 'undefined' && View.showEventLoadError) {
+              View.showEventLoadError("Configuração do Firebase inválida ou não carregada.");
+         } else {
+              document.body.innerHTML = '<p style="color:red; padding: 20px;">Erro crítico: Configuração do Firebase inválida ou não carregada.</p>';
+         }
+         return; // Impede a inicialização se a config estiver errada
+     }
+     // Se a config parece OK, inicia o Controller
      Controller.init();
 });
-
-    </script>
-
-</body>
-</html>
