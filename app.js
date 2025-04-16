@@ -3,6 +3,83 @@
 // Assume que firebase-config.js já foi carregado e definiu a variável firebaseConfig globalmente.
 // Assume que os SDKs do Firebase já foram carregados no index.html.
 
+// --- VIEW ---
+// Responsável por interagir com o DOM (ler e escrever no HTML)
+const View = {
+    // Referências a elementos DOM importantes
+    elements: {
+        loadingOverlay: document.getElementById('loading-overlay'),
+        sections: document.querySelectorAll('.app-section'),
+        eventErrorSection: document.getElementById('event-error-section'),
+        eventErrorMessage: document.getElementById('event-error-message'),
+        welcomeImage: document.getElementById('welcome-image'),
+        babyNameWelcome: document.getElementById('baby-name-welcome'),
+        eventDate: document.getElementById('event-date'),
+        eventTime: document.getElementById('event-time'),
+        adminUidInfo: document.getElementById('admin-uid-info'),
+        adminUidDisplay: document.getElementById('admin-uid-display'),
+        eventIdInfo: document.getElementById('event-id-info'),
+        eventIdDisplay: document.getElementById('event-id-display'),
+        rsvpForm: document.getElementById('rsvp-form'),
+        guestNameInput: document.getElementById('guest-name'),
+        guestEmailInput: document.getElementById('guest-email'),
+        rsvpError: document.getElementById('rsvp-error'),
+        giftListContainer: document.getElementById('gift-list-container'),
+        giftListLoading: document.getElementById('gift-list-loading'),
+        giftError: document.getElementById('gift-error'),
+        giftSelectedInfo: document.getElementById('gift-selected-info'),
+        confirmManualGiftBtn: document.getElementById('confirm-manual-gift-button'),
+        eventAddress: document.getElementById('event-address'),
+        mapLink: document.getElementById('map-link'),
+        googleCalendarLink: document.getElementById('google-calendar-link'),
+        thankyouMessage: document.getElementById('thankyou-message'),
+        adminSection: document.getElementById('admin-section'),
+        adminWelcomeMsg: document.getElementById('admin-welcome-message'),
+        adminUserName: document.getElementById('admin-user-name'),
+        adminEventId: document.getElementById('admin-event-id'),
+        adminEventForm: document.getElementById('admin-event-form'),
+        adminBabyName: document.getElementById('admin-baby-name'),
+        adminEventDate: document.getElementById('admin-event-date'),
+        adminEventTime: document.getElementById('admin-event-time'),
+        adminDuration: document.getElementById('admin-duration'),
+        adminEventAddress: document.getElementById('admin-event-address'),
+        adminUidsInput: document.getElementById('admin-uids'),
+        adminGiftListDiv: document.getElementById('admin-gift-list'),
+        adminGiftListLoading: document.getElementById('admin-gift-list-loading'),
+        addGiftForm: document.getElementById('add-gift-form'),
+        adminGiftError: document.getElementById('admin-gift-error'),
+        adminGiftSuccess: document.getElementById('admin-gift-success'),
+        mainNav: document.getElementById('main-nav'),
+        navGiftButton: document.getElementById('nav-gift-button'),
+        adminAuthButton: document.getElementById('admin-auth-button')
+    },
+
+    // --- Métodos de Atualização da UI ---
+    showLoading() { this.elements.loadingOverlay?.classList.add('visible'); },
+    hideLoading() { this.elements.loadingOverlay?.classList.remove('visible'); },
+    showSection(sectionId) { this.elements.sections.forEach(section => section.classList.remove('active')); const activeSection = document.getElementById(sectionId); if (activeSection) activeSection.classList.add('active'); else console.warn(`View: Seção '${sectionId}' não encontrada.`); window.scrollTo(0, 0); },
+    showEventLoadError(message) { if (this.elements.eventErrorMessage) this.elements.eventErrorMessage.textContent = message; this.showSection('event-error-section'); this.hideLoading(); },
+    showError(element, message) { if(element) { element.textContent = message; element.classList.remove('hidden'); } else { console.error("View: Elemento de erro não encontrado:", element); } },
+    hideError(element) { if(element) { element.classList.add('hidden'); element.textContent = ''; } },
+    showSuccess(element, message) { if(element) { element.textContent = message; element.classList.remove('hidden'); setTimeout(() => this.hideError(element), 4000); } },
+    applyTheme(themeColor = 'pink') { console.log("View: Aplicando tema:", themeColor); const root = document.documentElement; let p, s, a, t = '#333'; switch (themeColor) { case 'blue': p = '#ADD8E6'; s = '#B0E0E6'; a = '#87CEFA'; t = '#00008B'; break; case 'green': p = '#98FB98'; s = '#90EE90'; a = '#3CB371'; t = '#006400'; break; case 'yellow': p = '#FFFFE0'; s = '#FFFACD'; a = '#FFD700'; t = '#8B4513'; break; case 'pink': default: p = '#FFC0CB'; s = '#FFB6C1'; a = '#FF69B4'; t = '#333'; break; } root.style.setProperty('--primary-color', p); root.style.setProperty('--secondary-color', s); root.style.setProperty('--accent-color', a); root.style.setProperty('--text-color', t); const spin = document.querySelector('.spinner'); if (spin) spin.style.borderLeftColor = p; const img = this.elements.welcomeImage; if (img && img.src.includes('placehold.co')) { try { const parts = img.src.split('/'); const size = parts[3]; const ct = parts[4].split('?'); const txt = ct[1] || ''; const bg = p.substring(1); const tcH = t.substring(1); const tc = tcH.length === 6 ? tcH : '333'; img.src = `https://placehold.co/${size}/${bg}/${tc}?${txt}`; } catch (e) { console.warn("View: Falha placeholder img."); } } },
+    displayWelcomeInfo(config, eventId) { console.log("View: Recebido para UI -> ", config); if (!config) { console.log("View: displayWelcomeInfo chamado sem config."); return; } document.title = `Chá de Bebê da ${config.babyName || '[Nome]'}`; console.log("View: Tentando exibir babyName:", config.babyName); if(this.elements.babyNameWelcome) { console.log("View: Elemento babyNameWelcome encontrado."); this.elements.babyNameWelcome.textContent = config.babyName || '...'; } else { console.error("View: Elemento babyNameWelcome NÃO encontrado no HTML!"); } if (config.eventDate instanceof Date && !isNaN(config.eventDate)) { if(this.elements.eventDate) this.elements.eventDate.textContent = config.eventDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }); if(this.elements.eventTime) this.elements.eventTime.textContent = config.eventDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); } else { console.log("View: eventDate inválido ou nulo ao exibir:", config.eventDate); if(this.elements.eventDate) this.elements.eventDate.textContent = "Inválida"; if(this.elements.eventTime) this.elements.eventTime.textContent = ""; } if(this.elements.eventIdDisplay) this.elements.eventIdDisplay.textContent = eventId || 'N/A'; },
+    displayEventDetails(config) { if (!config) return; const address = config.eventAddress || ""; if (this.elements.eventAddress) this.elements.eventAddress.textContent = address || "Endereço não definido"; if (address && this.elements.mapLink) { const mapQuery = encodeURIComponent(address); this.elements.mapLink.href = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`; this.elements.mapLink.target = '_blank'; this.elements.mapLink.classList.remove('hidden'); } else if (this.elements.mapLink) { this.elements.mapLink.href = '#'; this.elements.mapLink.classList.add('hidden'); } if (config.eventDate instanceof Date && !isNaN(config.eventDate) && this.elements.googleCalendarLink) { const startTime = config.eventDate; const duration = config.durationHours || 3; const endTime = new Date(startTime.getTime() + duration * 60 * 60 * 1000); const formatGoogleDate = (d) => d.toISOString().replace(/-|:|\.\d{3}/g, ''); const googleStartDate = formatGoogleDate(startTime); const googleEndDate = formatGoogleDate(endTime); const calendarText = encodeURIComponent(`Chá de Bebê da ${config.babyName}`); const calendarDetails = encodeURIComponent(`Venha celebrar conosco! Local: ${address}`); const calendarLocation = encodeURIComponent(address); const googleLink = `https://www.google.com/calendar/render?action=TEMPLATE&text=${calendarText}&dates=${googleStartDate}/${googleEndDate}&details=${calendarDetails}&location=${calendarLocation}`; this.elements.googleCalendarLink.href = googleLink; this.elements.googleCalendarLink.onclick = null; } else if (this.elements.googleCalendarLink) { this.elements.googleCalendarLink.href = '#'; this.elements.googleCalendarLink.onclick = (e) => { e.preventDefault(); alert("Data do evento inválida ou não definida."); }; } },
+    updateAdminAuthButton(isUserAdmin, user) { const icon = this.elements.adminAuthButton.querySelector('img'); const text = this.elements.adminAuthButton.querySelector('span'); if (isUserAdmin) { icon.src = 'https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/log-out.svg'; icon.alt = 'Sair Admin'; text.textContent = 'Sair'; this.elements.adminAuthButton.classList.remove('text-gray-600', 'hover:text-theme-primary'); this.elements.adminAuthButton.classList.add('text-red-500', 'hover:text-red-700'); this.elements.adminUidDisplay.textContent = user?.uid || 'N/A'; this.elements.adminUidInfo.classList.remove('hidden'); this.elements.adminUserName.textContent = user?.displayName || user?.email || 'Admin'; this.elements.adminWelcomeMsg.classList.remove('hidden'); } else { icon.src = 'https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/log-in.svg'; icon.alt = 'Login Admin'; text.textContent = 'Admin'; this.elements.adminAuthButton.classList.add('text-gray-600', 'hover:text-theme-primary'); this.elements.adminAuthButton.classList.remove('text-red-500', 'hover:text-red-700'); this.elements.adminUidInfo.classList.add('hidden'); this.elements.adminWelcomeMsg.classList.add('hidden'); } },
+    updateNavGiftButton(enabled) { if (this.elements.navGiftButton) this.elements.navGiftButton.disabled = !enabled; },
+    fillRsvpForm(rsvpData) { if (this.elements.guestNameInput) this.elements.guestNameInput.value = rsvpData.name; const radio = document.querySelector(`input[name="attending"][value="${rsvpData.attending}"]`); if (radio) radio.checked = true; },
+    clearRsvpForm() { if (this.elements.rsvpForm) this.elements.rsvpForm.reset(); },
+    displayRsvpSuccess(name) { if (this.elements.thankyouMessage) this.elements.thankyouMessage.textContent = `Obrigado, ${name}! Sua resposta foi registada.`; },
+    displayRsvpNo(name) { if (this.elements.thankyouMessage) this.elements.thankyouMessage.textContent = `Obrigado, ${name}! Sentiremos sua falta.`; },
+    renderGiftList(gifts, onSelectCallback) { this.elements.giftListContainer.innerHTML = ''; this.hideError(this.elements.giftError); this.elements.giftListLoading.classList.add('hidden'); let hasAvailableGifts = false; if (!gifts || gifts.length === 0) { this.elements.giftListContainer.innerHTML = '<p class="text-center text-gray-500 col-span-full">Nenhum presente disponível.</p>'; return; } gifts.forEach(gift => { const reserved = gift.reserved || 0; const available = gift.quantity - reserved; if (available > 0) { hasAvailableGifts = true; const itemDiv = document.createElement('div'); itemDiv.className = 'gift-item border border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:shadow-md bg-white'; itemDiv.dataset.giftId = gift.id; itemDiv.innerHTML = ` <img src="${gift.img || 'https://placehold.co/100x100/cccccc/ffffff?text=Img'}" alt="${gift.name}" class="h-16 w-16 mx-auto mb-2 rounded object-cover" onerror="this.src='https://placehold.co/100x100/cccccc/ffffff?text=Img'"> <p class="font-semibold text-sm">${gift.name}</p> <p class="text-xs text-gray-500">${gift.description || ''}</p> <p class="text-xs text-blue-500 mt-1">Disponível: ${available}</p>`; itemDiv.addEventListener('click', () => onSelectCallback(gift.id, itemDiv)); this.elements.giftListContainer.appendChild(itemDiv); } }); if (!hasAvailableGifts) { this.elements.giftListContainer.innerHTML = '<p class="text-center text-gray-500 col-span-full">Todos presentes escolhidos.</p>'; } },
+    selectGiftUI(element) { document.querySelectorAll('.gift-item.selected').forEach(el => el.classList.remove('selected', 'border-2', 'border-theme-accent')); element.classList.add('selected', 'border-2', 'border-theme-accent'); this.elements.confirmManualGiftBtn.classList.remove('hidden'); this.hideError(this.elements.giftError); this.hideError(this.elements.giftSelectedInfo); },
+    clearGiftSelectionUI() { document.querySelectorAll('.gift-item.selected').forEach(el => el.classList.remove('selected', 'border-2', 'border-theme-accent')); this.elements.confirmManualGiftBtn.classList.add('hidden'); },
+    displayGiftResult(message, isSuccess) { const element = isSuccess ? this.elements.giftSelectedInfo : this.elements.giftError; this.showError(element === this.elements.giftError ? this.elements.giftSelectedInfo : this.elements.giftError, ''); if (isSuccess) this.showSuccess(element, message); else this.showError(element, message); },
+    populateAdminForm(config, eventId) { if (!config) return; if(this.elements.adminEventId) this.elements.adminEventId.textContent = eventId || 'N/A'; try { this.elements.adminBabyName.value = config.babyName || ''; if (config.eventDate instanceof Date && !isNaN(config.eventDate)) { const dateStr = config.eventDate.getFullYear() + '-' + ('0' + (config.eventDate.getMonth() + 1)).slice(-2) + '-' + ('0' + config.eventDate.getDate()).slice(-2); const timeStr = ('0' + config.eventDate.getHours()).slice(-2) + ':' + ('0' + config.eventDate.getMinutes()).slice(-2); this.elements.adminEventDate.value = dateStr; this.elements.adminEventTime.value = timeStr; } else { this.elements.adminEventDate.value = ''; this.elements.adminEventTime.value = ''; } this.elements.adminEventAddress.value = config.eventAddress || ''; this.elements.adminDuration.value = config.durationHours || 3; const themeRadio = document.querySelector(`input[name="theme"][value="${config.themeColor || 'pink'}"]`); if (themeRadio) themeRadio.checked = true; if (this.elements.adminUidsInput) this.elements.adminUidsInput.value = (config.adminUids || []).join(', '); } catch (e) { console.error("View: Erro ao popular form admin:", e); this.showError(this.elements.adminGiftError, "Erro ao carregar dados do formulário."); } },
+    renderAdminGiftList(gifts, deleteCallback) { this.elements.adminGiftListDiv.innerHTML = ''; if(this.elements.adminGiftListLoading) this.elements.adminGiftListLoading.classList.add('hidden'); if (!gifts || gifts.length === 0) { this.elements.adminGiftListDiv.innerHTML = '<p class="text-gray-500">Nenhum presente cadastrado.</p>'; return; } gifts.forEach(gift => { const reserved = gift.reserved || 0; const div = document.createElement('div'); div.className = 'flex justify-between items-center flex-wrap'; div.innerHTML = ` <div class="mb-2 mr-2"> <p class="font-semibold">${gift.name} <span class="text-xs text-gray-400">(ID: ${gift.id})</span></p> <p class="text-sm text-gray-600">${gift.description || 'Sem descrição'}</p> <p class="text-sm text-gray-500">Marcas: ${gift.suggestedBrands || 'Nenhuma'}</p> <p class="text-sm">Qtd Total: ${gift.quantity} | Reservados: ${reserved}</p> ${gift.img ? `<a href="${gift.img}" target="_blank" class="text-xs text-blue-500 hover:underline">Ver Imagem</a>` : '<span class="text-xs text-gray-400">Sem Imagem</span>'} </div> <div class="flex-shrink-0"> <button data-action="delete-gift" data-gift-id="${gift.id}" data-reserved-count="${reserved}" class="delete-button text-xs" ${reserved > 0 ? 'disabled title="Não pode excluir presentes já reservados"' : ''}> Excluir </button> </div>`; this.elements.adminGiftListDiv.appendChild(div); }); },
+    clearAddGiftForm() { if(this.elements.addGiftForm) this.elements.addGiftForm.reset(); }
+};
+
 // --- Inicializar Firebase ---
 let db, auth, googleProvider;
 try {
@@ -237,82 +314,6 @@ const Model = {
      }
 };
 
-// --- VIEW ---
-// Responsável por interagir com o DOM (ler e escrever no HTML)
-const View = {
-    // Referências a elementos DOM importantes
-    elements: {
-        loadingOverlay: document.getElementById('loading-overlay'),
-        sections: document.querySelectorAll('.app-section'),
-        eventErrorSection: document.getElementById('event-error-section'),
-        eventErrorMessage: document.getElementById('event-error-message'),
-        welcomeImage: document.getElementById('welcome-image'),
-        babyNameWelcome: document.getElementById('baby-name-welcome'),
-        eventDate: document.getElementById('event-date'),
-        eventTime: document.getElementById('event-time'),
-        adminUidInfo: document.getElementById('admin-uid-info'),
-        adminUidDisplay: document.getElementById('admin-uid-display'),
-        eventIdInfo: document.getElementById('event-id-info'),
-        eventIdDisplay: document.getElementById('event-id-display'),
-        rsvpForm: document.getElementById('rsvp-form'),
-        guestNameInput: document.getElementById('guest-name'),
-        guestEmailInput: document.getElementById('guest-email'),
-        rsvpError: document.getElementById('rsvp-error'),
-        giftListContainer: document.getElementById('gift-list-container'),
-        giftListLoading: document.getElementById('gift-list-loading'),
-        giftError: document.getElementById('gift-error'),
-        giftSelectedInfo: document.getElementById('gift-selected-info'),
-        confirmManualGiftBtn: document.getElementById('confirm-manual-gift-button'),
-        eventAddress: document.getElementById('event-address'),
-        mapLink: document.getElementById('map-link'),
-        googleCalendarLink: document.getElementById('google-calendar-link'),
-        thankyouMessage: document.getElementById('thankyou-message'),
-        adminSection: document.getElementById('admin-section'),
-        adminWelcomeMsg: document.getElementById('admin-welcome-message'),
-        adminUserName: document.getElementById('admin-user-name'),
-        adminEventId: document.getElementById('admin-event-id'),
-        adminEventForm: document.getElementById('admin-event-form'),
-        adminBabyName: document.getElementById('admin-baby-name'),
-        adminEventDate: document.getElementById('admin-event-date'),
-        adminEventTime: document.getElementById('admin-event-time'),
-        adminDuration: document.getElementById('admin-duration'),
-        adminEventAddress: document.getElementById('admin-event-address'),
-        adminUidsInput: document.getElementById('admin-uids'),
-        adminGiftListDiv: document.getElementById('admin-gift-list'),
-        adminGiftListLoading: document.getElementById('admin-gift-list-loading'),
-        addGiftForm: document.getElementById('add-gift-form'),
-        adminGiftError: document.getElementById('admin-gift-error'),
-        adminGiftSuccess: document.getElementById('admin-gift-success'),
-        mainNav: document.getElementById('main-nav'),
-        navGiftButton: document.getElementById('nav-gift-button'),
-        adminAuthButton: document.getElementById('admin-auth-button')
-    },
-
-    // --- Métodos de Atualização da UI ---
-    showLoading() { this.elements.loadingOverlay?.classList.add('visible'); },
-    hideLoading() { this.elements.loadingOverlay?.classList.remove('visible'); },
-    showSection(sectionId) { this.elements.sections.forEach(section => section.classList.remove('active')); const activeSection = document.getElementById(sectionId); if (activeSection) activeSection.classList.add('active'); else console.warn(`View: Seção '${sectionId}' não encontrada.`); window.scrollTo(0, 0); },
-    showEventLoadError(message) { if (this.elements.eventErrorMessage) this.elements.eventErrorMessage.textContent = message; this.showSection('event-error-section'); this.hideLoading(); },
-    showError(element, message) { if(element) { element.textContent = message; element.classList.remove('hidden'); } else { console.error("View: Elemento de erro não encontrado:", element); } },
-    hideError(element) { if(element) { element.classList.add('hidden'); element.textContent = ''; } },
-    showSuccess(element, message) { if(element) { element.textContent = message; element.classList.remove('hidden'); setTimeout(() => this.hideError(element), 4000); } },
-    applyTheme(themeColor = 'pink') { console.log("View: Aplicando tema:", themeColor); const root = document.documentElement; let p, s, a, t = '#333'; switch (themeColor) { case 'blue': p = '#ADD8E6'; s = '#B0E0E6'; a = '#87CEFA'; t = '#00008B'; break; case 'green': p = '#98FB98'; s = '#90EE90'; a = '#3CB371'; t = '#006400'; break; case 'yellow': p = '#FFFFE0'; s = '#FFFACD'; a = '#FFD700'; t = '#8B4513'; break; case 'pink': default: p = '#FFC0CB'; s = '#FFB6C1'; a = '#FF69B4'; t = '#333'; break; } root.style.setProperty('--primary-color', p); root.style.setProperty('--secondary-color', s); root.style.setProperty('--accent-color', a); root.style.setProperty('--text-color', t); const spin = document.querySelector('.spinner'); if (spin) spin.style.borderLeftColor = p; const img = this.elements.welcomeImage; if (img && img.src.includes('placehold.co')) { try { const parts = img.src.split('/'); const size = parts[3]; const ct = parts[4].split('?'); const txt = ct[1] || ''; const bg = p.substring(1); const tcH = t.substring(1); const tc = tcH.length === 6 ? tcH : '333'; img.src = `https://placehold.co/${size}/${bg}/${tc}?${txt}`; } catch (e) { console.warn("View: Falha placeholder img."); } } },
-    displayWelcomeInfo(config, eventId) { console.log("View: Recebido para UI -> ", config); if (!config) { console.log("View: displayWelcomeInfo chamado sem config."); return; } document.title = `Chá de Bebê da ${config.babyName || '[Nome]'}`; console.log("View: Tentando exibir babyName:", config.babyName); if(this.elements.babyNameWelcome) { console.log("View: Elemento babyNameWelcome encontrado."); this.elements.babyNameWelcome.textContent = config.babyName || '...'; } else { console.error("View: Elemento babyNameWelcome NÃO encontrado no HTML!"); } if (config.eventDate instanceof Date && !isNaN(config.eventDate)) { if(this.elements.eventDate) this.elements.eventDate.textContent = config.eventDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric' }); if(this.elements.eventTime) this.elements.eventTime.textContent = config.eventDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }); } else { console.log("View: eventDate inválido ou nulo ao exibir:", config.eventDate); if(this.elements.eventDate) this.elements.eventDate.textContent = "Inválida"; if(this.elements.eventTime) this.elements.eventTime.textContent = ""; } if(this.elements.eventIdDisplay) this.elements.eventIdDisplay.textContent = eventId || 'N/A'; },
-    displayEventDetails(config) { if (!config) return; const address = config.eventAddress || ""; if (this.elements.eventAddress) this.elements.eventAddress.textContent = address || "Endereço não definido"; if (address && this.elements.mapLink) { const mapQuery = encodeURIComponent(address); this.elements.mapLink.href = `https://www.google.com/maps/search/?api=1&query=${mapQuery}`; this.elements.mapLink.target = '_blank'; this.elements.mapLink.classList.remove('hidden'); } else if (this.elements.mapLink) { this.elements.mapLink.href = '#'; this.elements.mapLink.classList.add('hidden'); } if (config.eventDate instanceof Date && !isNaN(config.eventDate) && this.elements.googleCalendarLink) { const startTime = config.eventDate; const duration = config.durationHours || 3; const endTime = new Date(startTime.getTime() + duration * 60 * 60 * 1000); const formatGoogleDate = (d) => d.toISOString().replace(/-|:|\.\d{3}/g, ''); const googleStartDate = formatGoogleDate(startTime); const googleEndDate = formatGoogleDate(endTime); const calendarText = encodeURIComponent(`Chá de Bebê da ${config.babyName}`); const calendarDetails = encodeURIComponent(`Venha celebrar conosco! Local: ${address}`); const calendarLocation = encodeURIComponent(address); const googleLink = `https://www.google.com/calendar/render?action=TEMPLATE&text=${calendarText}&dates=${googleStartDate}/${googleEndDate}&details=${calendarDetails}&location=${calendarLocation}`; this.elements.googleCalendarLink.href = googleLink; this.elements.googleCalendarLink.onclick = null; } else if (this.elements.googleCalendarLink) { this.elements.googleCalendarLink.href = '#'; this.elements.googleCalendarLink.onclick = (e) => { e.preventDefault(); alert("Data do evento inválida ou não definida."); }; } },
-    updateAdminAuthButton(isUserAdmin, user) { const icon = this.elements.adminAuthButton.querySelector('img'); const text = this.elements.adminAuthButton.querySelector('span'); if (isUserAdmin) { icon.src = 'https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/log-out.svg'; icon.alt = 'Sair Admin'; text.textContent = 'Sair'; this.elements.adminAuthButton.classList.remove('text-gray-600', 'hover:text-theme-primary'); this.elements.adminAuthButton.classList.add('text-red-500', 'hover:text-red-700'); this.elements.adminUidDisplay.textContent = user?.uid || 'N/A'; this.elements.adminUidInfo.classList.remove('hidden'); this.elements.adminUserName.textContent = user?.displayName || user?.email || 'Admin'; this.elements.adminWelcomeMsg.classList.remove('hidden'); } else { icon.src = 'https://cdn.jsdelivr.net/npm/lucide-static@latest/icons/log-in.svg'; icon.alt = 'Login Admin'; text.textContent = 'Admin'; this.elements.adminAuthButton.classList.add('text-gray-600', 'hover:text-theme-primary'); this.elements.adminAuthButton.classList.remove('text-red-500', 'hover:text-red-700'); this.elements.adminUidInfo.classList.add('hidden'); this.elements.adminWelcomeMsg.classList.add('hidden'); } },
-    updateNavGiftButton(enabled) { if (this.elements.navGiftButton) this.elements.navGiftButton.disabled = !enabled; },
-    fillRsvpForm(rsvpData) { if (this.elements.guestNameInput) this.elements.guestNameInput.value = rsvpData.name; const radio = document.querySelector(`input[name="attending"][value="${rsvpData.attending}"]`); if (radio) radio.checked = true; },
-    clearRsvpForm() { if (this.elements.rsvpForm) this.elements.rsvpForm.reset(); },
-    displayRsvpSuccess(name) { if (this.elements.thankyouMessage) this.elements.thankyouMessage.textContent = `Obrigado, ${name}! Sua resposta foi registada.`; },
-    displayRsvpNo(name) { if (this.elements.thankyouMessage) this.elements.thankyouMessage.textContent = `Obrigado, ${name}! Sentiremos sua falta.`; },
-    renderGiftList(gifts, onSelectCallback) { this.elements.giftListContainer.innerHTML = ''; this.hideError(this.elements.giftError); this.elements.giftListLoading.classList.add('hidden'); let hasAvailableGifts = false; if (!gifts || gifts.length === 0) { this.elements.giftListContainer.innerHTML = '<p class="text-center text-gray-500 col-span-full">Nenhum presente disponível.</p>'; return; } gifts.forEach(gift => { const reserved = gift.reserved || 0; const available = gift.quantity - reserved; if (available > 0) { hasAvailableGifts = true; const itemDiv = document.createElement('div'); itemDiv.className = 'gift-item border border-gray-200 rounded-lg p-3 text-center cursor-pointer hover:shadow-md bg-white'; itemDiv.dataset.giftId = gift.id; itemDiv.innerHTML = ` <img src="${gift.img || 'https://placehold.co/100x100/cccccc/ffffff?text=Img'}" alt="${gift.name}" class="h-16 w-16 mx-auto mb-2 rounded object-cover" onerror="this.src='https://placehold.co/100x100/cccccc/ffffff?text=Img'"> <p class="font-semibold text-sm">${gift.name}</p> <p class="text-xs text-gray-500">${gift.description || ''}</p> <p class="text-xs text-blue-500 mt-1">Disponível: ${available}</p>`; itemDiv.addEventListener('click', () => onSelectCallback(gift.id, itemDiv)); this.elements.giftListContainer.appendChild(itemDiv); } }); if (!hasAvailableGifts) { this.elements.giftListContainer.innerHTML = '<p class="text-center text-gray-500 col-span-full">Todos presentes escolhidos.</p>'; } },
-    selectGiftUI(element) { document.querySelectorAll('.gift-item.selected').forEach(el => el.classList.remove('selected', 'border-2', 'border-theme-accent')); element.classList.add('selected', 'border-2', 'border-theme-accent'); this.elements.confirmManualGiftBtn.classList.remove('hidden'); this.hideError(this.elements.giftError); this.hideError(this.elements.giftSelectedInfo); },
-    clearGiftSelectionUI() { document.querySelectorAll('.gift-item.selected').forEach(el => el.classList.remove('selected', 'border-2', 'border-theme-accent')); this.elements.confirmManualGiftBtn.classList.add('hidden'); },
-    displayGiftResult(message, isSuccess) { const element = isSuccess ? this.elements.giftSelectedInfo : this.elements.giftError; this.showError(element === this.elements.giftError ? this.elements.giftSelectedInfo : this.elements.giftError, ''); if (isSuccess) this.showSuccess(element, message); else this.showError(element, message); },
-    populateAdminForm(config, eventId) { if (!config) return; if(this.elements.adminEventId) this.elements.adminEventId.textContent = eventId || 'N/A'; try { this.elements.adminBabyName.value = config.babyName || ''; if (config.eventDate instanceof Date && !isNaN(config.eventDate)) { const dateStr = config.eventDate.getFullYear() + '-' + ('0' + (config.eventDate.getMonth() + 1)).slice(-2) + '-' + ('0' + config.eventDate.getDate()).slice(-2); const timeStr = ('0' + config.eventDate.getHours()).slice(-2) + ':' + ('0' + config.eventDate.getMinutes()).slice(-2); this.elements.adminEventDate.value = dateStr; this.elements.adminEventTime.value = timeStr; } else { this.elements.adminEventDate.value = ''; this.elements.adminEventTime.value = ''; } this.elements.adminEventAddress.value = config.eventAddress || ''; this.elements.adminDuration.value = config.durationHours || 3; const themeRadio = document.querySelector(`input[name="theme"][value="${config.themeColor || 'pink'}"]`); if (themeRadio) themeRadio.checked = true; if (this.elements.adminUidsInput) this.elements.adminUidsInput.value = (config.adminUids || []).join(', '); } catch (e) { console.error("View: Erro ao popular form admin:", e); this.showError(this.elements.adminGiftError, "Erro ao carregar dados do formulário."); } },
-    renderAdminGiftList(gifts, deleteCallback) { this.elements.adminGiftListDiv.innerHTML = ''; if(this.elements.adminGiftListLoading) this.elements.adminGiftListLoading.classList.add('hidden'); if (!gifts || gifts.length === 0) { this.elements.adminGiftListDiv.innerHTML = '<p class="text-gray-500">Nenhum presente cadastrado.</p>'; return; } gifts.forEach(gift => { const reserved = gift.reserved || 0; const div = document.createElement('div'); div.className = 'flex justify-between items-center flex-wrap'; div.innerHTML = ` <div class="mb-2 mr-2"> <p class="font-semibold">${gift.name} <span class="text-xs text-gray-400">(ID: ${gift.id})</span></p> <p class="text-sm text-gray-600">${gift.description || 'Sem descrição'}</p> <p class="text-sm text-gray-500">Marcas: ${gift.suggestedBrands || 'Nenhuma'}</p> <p class="text-sm">Qtd Total: ${gift.quantity} | Reservados: ${reserved}</p> ${gift.img ? `<a href="${gift.img}" target="_blank" class="text-xs text-blue-500 hover:underline">Ver Imagem</a>` : '<span class="text-xs text-gray-400">Sem Imagem</span>'} </div> <div class="flex-shrink-0"> <button data-action="delete-gift" data-gift-id="${gift.id}" data-reserved-count="${reserved}" class="delete-button text-xs" ${reserved > 0 ? 'disabled title="Não pode excluir presentes já reservados"' : ''}> Excluir </button> </div>`; this.elements.adminGiftListDiv.appendChild(div); }); },
-    clearAddGiftForm() { if(this.elements.addGiftForm) this.elements.addGiftForm.reset(); }
-};
 
 // --- CONTROLLER ---
 const Controller = {
