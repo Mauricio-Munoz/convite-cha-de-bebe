@@ -283,8 +283,7 @@ const Model = {
          return giftName; // Retorna o nome para a View usar
     },
 
-     // --- Autenticação ---
-/*    
+     // --- Autenticação ---    
      async signInWithGoogle() {
          console.log("Model: Iniciando login com Google...");
          const result = await auth.signInWithPopup(googleProvider);
@@ -297,32 +296,7 @@ const Model = {
          await auth.signOut();
          console.log("Model: Logout concluído.");
      },
-*/
-    async signInWithGoogle() {
-        console.log("Model: Iniciando login com Google...");
-        
-        // Desativa o botão durante o processo
-        const authButton = document.getElementById('admin-auth-button');
-        if (authButton) authButton.disabled = true;
-    
-        try {
-            const result = await auth.signInWithPopup(googleProvider);
-            console.log("Model: Login bem-sucedido", result.user?.uid);
-            return result.user;
-        } catch (error) {
-            // Trata erro específico de popup cancelado
-            if (error.code === 'auth/cancelled-popup-request') {
-                console.warn("Popup cancelado pelo usuário ou conflito.");
-                alert("Por favor, feche o popup anterior antes de tentar novamente.");
-            } else {
-                console.error("Erro no login:", error);
-                throw error; // Propaga outros erros
-            }
-        } finally {
-            // Reativa o botão mesmo se der erro
-            if (authButton) authButton.disabled = false;
-        }
-    }
+
     
     // --- Estado Interno ---
      setCurrentUser(user) {
